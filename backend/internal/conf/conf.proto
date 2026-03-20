@@ -1,0 +1,50 @@
+syntax = "proto3";
+package kratos.api;
+
+option go_package = "github.com/social-tool/backend/internal/conf;conf";
+
+message Bootstrap {
+  Server server = 1;
+  Data data = 2;
+  Auth auth = 3;
+  Twitter twitter = 4;
+  LLM llm = 5;
+}
+
+message Server {
+  message HTTP {
+    string network = 1;
+    string addr = 2;
+    string timeout = 3;
+  }
+  message GRPC {
+    string network = 1;
+    string addr = 2;
+    string timeout = 3;
+  }
+  HTTP http = 1;
+  GRPC grpc = 2;
+}
+
+message Data {
+  string mongodb_uri = 1;
+  string redis_uri = 2;
+  string database = 3;
+}
+
+message Auth {
+  string jwt_secret = 1;
+  string encryption_key = 2;
+}
+
+message Twitter {
+  string client_id = 1;
+  string client_secret = 2;
+  string callback_url = 3;
+  string bearer_token = 4;
+}
+
+message LLM {
+  string kimi_api_key = 1;
+  string claude_api_key = 2;
+}

@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+package socialtool.v1;
+
+option go_package = "github.com/social-tool/backend/api/socialtool/v1;v1";
+
+import "google/api/annotations.proto";
+
+service AuthService {
+  rpc GetTwitterOAuthURL (GetTwitterOAuthURLRequest) returns (GetTwitterOAuthURLReply) {
+    option (google.api.http) = {
+      get: "/api/auth/twitter/url"
+    };
+  }
+
+  rpc TwitterCallback (TwitterCallbackRequest) returns (TwitterCallbackReply) {
+    option (google.api.http) = {
+      post: "/api/auth/twitter/callback"
+      body: "*"
+    };
+  }
+
+  rpc RefreshToken (RefreshTokenRequest) returns (RefreshTokenReply) {
+    option (google.api.http) = {
+      post: "/api/auth/refresh"
+      body: "*"
+    };
+  }
+
+  rpc GetCurrentUser (GetCurrentUserRequest) returns (GetCurrentUserReply) {
+    option (google.api.http) = {
+      get: "/api/auth/me"
+    };
+  }
+
+  rpc Logout (LogoutRequest) returns (LogoutReply) {
+    option (google.api.http) = {
+      post: "/api/auth/logout"
+      body: "*"
+    };
+  }
+}
+
+message GetTwitterOAuthURLRequest {}
+message GetTwitterOAuthURLReply {
+  string url = 1;
+  string state = 2;
+}
+
+message TwitterCallbackRequest {
+  string code = 1;
+  string state = 2;
+  string code_verifier = 3;
+}
+message TwitterCallbackReply {
+  string access_token = 1;
+  string refresh_token = 2;
+  int64 expires_in = 3;
+  UserInfo user = 4;
+}
+
+message RefreshTokenRequest {
+  string refresh_token = 1;
+}
+message RefreshTokenReply {
+  string access_token = 1;
+  string refresh_token = 2;
+  int64 expires_in = 3;
+}
+
+message GetCurrentUserRequest {}
+message GetCurrentUserReply {
+  UserInfo user = 1;
+}
+
+message UserInfo {
+  string id = 1;
+  string twitter_id = 2;
+  string twitter_username = 3;
+  string display_name = 4;
+  string avatar_url = 5;
+  string email = 6;
+}
+
+message LogoutRequest {}
+message LogoutReply {}

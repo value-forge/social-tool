@@ -1,0 +1,27 @@
+server:
+  http:
+    addr: 0.0.0.0:8000
+    timeout: 30s
+  grpc:
+    addr: 0.0.0.0:9000
+    timeout: 30s
+
+data:
+  mongodb_uri: mongodb://localhost:27017
+  redis_uri: redis://localhost:6379/0
+  database: social_tool
+
+auth:
+  jwt_secret: change-me-to-a-random-string
+  encryption_key: change-me-32-bytes-aes256-key!!
+
+twitter:
+  client_id: Z3FKRzEwZmxtY1hKRGZHdGxnTVU6MTpjaQ
+  client_secret: fE4iFbixS7PeKgVnTtJowLMpDom232u4h2VJXGdHZFJmU66LIi
+  # 须与浏览器访问前端的 Origin 一致，并在 X Developer Portal 中登记为 Callback URL
+  callback_url: http://127.0.0.1:5173/auth/twitter/callback
+  bearer_token: AAAAAAAAAAAAAAAAAAAAAJej8QEAAAAABbjt%2B9bfXDKfYKvReI9F9CJJrsE%3D7n8GRsAW9jf6uI7r0q8uhTX38CrRJanWUZnOhscD4oZstenRna
+
+llm:
+  kimi_api_key: ${KIMI_API_KEY}
+  claude_api_key: ${CLAUDE_API_KEY}
