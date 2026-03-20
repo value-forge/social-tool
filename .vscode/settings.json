@@ -1,0 +1,7 @@
+{
+  "go.gopath": "/Users/lijunxuniji/go",
+  "go.toolsEnvVars": {
+    "GOPATH": "/Users/lijunxuniji/go",
+    "GOMODCACHE": "/Users/lijunxuniji/go/pkg/mod"
+  }
+}
