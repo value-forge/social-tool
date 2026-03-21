@@ -1,6 +1,6 @@
 server:
   http:
-    addr: 0.0.0.0:8000
+    addr: 0.0.0.0:8888
     timeout: 30s
   grpc:
     addr: 0.0.0.0:9000
@@ -21,6 +21,11 @@ twitter:
   # 须与浏览器访问前端的 Origin 一致，并在 X Developer Portal 中登记为 Callback URL
   callback_url: http://127.0.0.1:5173/auth/twitter/callback
   bearer_token: AAAAAAAAAAAAAAAAAAAAAJej8QEAAAAABbjt%2B9bfXDKfYKvReI9F9CJJrsE%3D7n8GRsAW9jf6uI7r0q8uhTX38CrRJanWUZnOhscD4oZstenRna
+
+# bird-cli 配置（当 Chrome cookies 不可用时使用）
+bird:
+  auth_token: "4188a659c7465b4e2b0375043ffb93e5292c1bf9"
+  ct0: "e23ed1fa706b69662c2281af15040a6d5cb05eeba15003ff1f02f6d8e8ed24adce32855e66cdfd29da3708098b0a259244b14457d9a6581f93b1c42b877c0a70e96cd6fa17b18b843a891d3b4e1f06c7"
 
 llm:
   kimi_api_key: ${KIMI_API_KEY}

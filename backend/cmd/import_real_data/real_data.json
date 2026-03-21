@@ -1,0 +1,269 @@
+[
+  {
+    "id": "2032414511903502656",
+    "text": "为什么中国人总爱谈“悟道”？——从投资、理性到人生的一种理解",
+    "createdAt": "Fri Mar 13 11:12:34 +0000 2026",
+    "replyCount": 0,
+    "retweetCount": 0,
+    "likeCount": 9,
+    "conversationId": "2032414511903502656",
+    "author": {
+      "username": "0xpeterlee",
+      "name": "耐心Peter"
+    },
+    "authorId": "1717372691270053888",
+    "article": {
+      "title": "为什么中国人总爱谈“悟道”？——从投资、理性到人生的一种理解",
+      "previewText": "“悟道”这个词，在中国人的表达里几乎已经泛滥\n尤其是在投资圈。\n投资者会说自己 “悟道了”\n做生意的人会说 “看懂了门道”\n有些人在人生低谷后会说 “突然想通了”\n西方语境中，很少有一个词能完全对应“悟道”。"
+    }
+  },
+  {
+    "id": "2032386395814424982",
+    "text": "说明王兴想清楚了，好奇美团会如何应对agent对于当前美团商业模式的冲击",
+    "createdAt": "Fri Mar 13 09:20:51 +0000 2026",
+    "replyCount": 0,
+    "retweetCount": 0,
+    "likeCount": 2,
+    "conversationId": "2032386395814424982",
+    "author": {
+      "username": "0xpeterlee",
+      "name": "耐心Peter"
+    },
+    "authorId": "1717372691270053888",
+    "quotedTweet": {
+      "id": "2032367582251303354",
+      "text": "美团王兴：AI Agent对我的冲击比ChatGPT更大。 https://t.co/wX4lZqxQmh",
+      "createdAt": "Fri Mar 13 08:06:05 +0000 2026",
+      "replyCount": 39,
+      "retweetCount": 59,
+      "likeCount": 415,
+      "conversationId": "2032367582251303354",
+      "author": {
+        "username": "fxtrader",
+        "name": "外汇交易员"
+      },
+      "authorId": "1059638356609396736",
+      "media": [
+        {
+          "type": "photo",
+          "url": "https://pbs.twimg.com/media/HDRrejSbQAEkTLM.jpg",
+          "width": 1222,
+          "height": 750,
+          "previewUrl": "https://pbs.twimg.com/media/HDRrejSbQAEkTLM.jpg:small"
+        }
+      ]
+    }
+  },
+  {
+    "id": "2032325516104253841",
+    "text": "elon is a genius",
+    "createdAt": "Fri Mar 13 05:18:56 +0000 2026",
+    "replyCount": 0,
+    "retweetCount": 0,
+    "likeCount": 1,
+    "conversationId": "2032325516104253841",
+    "author": {
+      "username": "0xpeterlee",
+      "name": "耐心Peter"
+    },
+    "authorId": "1717372691270053888",
+    "quotedTweet": {
+      "id": "2032184979212681437",
+      "text": "Never bet against Elon Musk https://t.co/RYwOGkKPys",
+      "createdAt": "Thu Mar 12 20:00:29 +0000 2026",
+      "replyCount": 283,
+      "retweetCount": 353,
+      "likeCount": 3101,
+      "conversationId": "2032184979212681437",
+      "author": {
+        "username": "Teslaconomics",
+        "name": "Teslaconomics"
+      },
+      "authorId": "985243593538338816",
+      "media": [
+        {
+          "type": "video",
+          "url": "https://pbs.twimg.com/amplify_video_thumb/2032184918256861185/img/iUplCmTQWESbDQWj.jpg",
+          "width": 1078,
+          "height": 1064,
+          "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2032184918256861185/img/iUplCmTQWESbDQWj.jpg:small",
+          "videoUrl": "https://video.twimg.com/amplify_video/2032184918256861185/vid/avc1/1078x1064/8GldzOvZQmbMENCu.mp4?tag=21",
+          "durationMs": 12600
+        }
+      ]
+    }
+  },
+  {
+    "id": "2031582106326069261",
+    "text": "用openclaw搭配cursor，生产力直接拉满！\n\n几十个模型并行coding、写文章，cursor里再做些细调，完美解决codex和claudecode的慢、并行开发和幻觉问题！ https://t.co/KhYyyHp2lS",
+    "createdAt": "Wed Mar 11 04:04:53 +0000 2026",
+    "replyCount": 2,
+    "retweetCount": 0,
+    "likeCount": 2,
+    "conversationId": "2031582106326069261",
+    "author": {
+      "username": "0xpeterlee",
+      "name": "耐心Peter"
+    },
+    "authorId": "1717372691270053888",
+    "media": [
+      {
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HDGgZIsbIAA0VTb.jpg",
+        "width": 1739,
+        "height": 884,
+        "previewUrl": "https://pbs.twimg.com/media/HDGgZIsbIAA0VTb.jpg:small"
+      }
+    ]
+  },
+  {
+    "id": "2031361940556312980",
+    "text": "无论任何工具，本质都是用来解决问题，问题的主体永远是人，工具就一定需要被人使用\n基于第一性原理分析：AI 依然只是工具，它必须嵌入到真实的人类问题里，才会产生价值\n基于当前AI模型所提供的能力，同时懂业务 + 懂代码的人，才能调教出更“有价值”的龙虾。 🦞\n程序员朋友们暂时先别焦虑，但是如果继续保持不接触新事物的态度，很危险",
+    "createdAt": "Tue Mar 10 13:30:02 +0000 2026",
+    "replyCount": 0,
+    "retweetCount": 0,
+    "likeCount": 3,
+    "conversationId": "2031361940556312980",
+    "author": {
+      "username": "0xpeterlee",
+      "name": "耐心Peter"
+    },
+    "authorId": "1717372691270053888"
+  },
+  {
+    "id": "2031005479548461162",
+    "text": "Agent 终极形态思考",
+    "createdAt": "Mon Mar 09 13:53:35 +0000 2026",
+    "replyCount": 4,
+    "retweetCount": 1,
+    "likeCount": 18,
+    "conversationId": "2031005479548461162",
+    "author": {
+      "username": "0xpeterlee",
+      "name": "耐心Peter"
+    },
+    "authorId": "1717372691270053888",
+    "article": {
+      "title": "Agent 终极形态思考",
+      "previewText": "最近高强度用 OpenClaw + 各家交易所的 Skill 做了一段时间测试，简单说一下我的真实体验和一个不成熟的判断。\n体验下来有两个明显问题：\n1️⃣ 普通用户门槛太高\n现在的 Skill"
+    }
+  },
+  {
+    "id": "2030953132717658471",
+    "text": "有过类似思考，其实最终可能就是卖垂类业务逻辑的skill，比如某个大v的投研分析思路就可以完全用一个skill去定义",
+    "createdAt": "Mon Mar 09 10:25:34 +0000 2026",
+    "replyCount": 0,
+    "retweetCount": 0,
+    "likeCount": 1,
+    "conversationId": "2030953132717658471",
+    "author": {
+      "username": "0xpeterlee",
+      "name": "耐心Peter"
+    },
+    "authorId": "1717372691270053888",
+    "quotedTweet": {
+      "id": "2030944180038471851",
+      "text": "AI Agent 的“App Store”时刻到了！🦞\n\n💰老外已经开始靠卖 soul.md 赚钱了。\n\nsoulszip是一个专门为 Agent 打造的“灵魂”与“技能”商店。\n\nOpenClaw 🦞龙虾人，你们手里的 Skills 变现机会来了。👇\n\n简单来说，它是一个 AI 资产交易平台。\n\n核心卖点：\n\n1️⃣ Souls（灵魂）：自带职业人格的 Agent（如后端 Harry、文案 Cory）。\n\n2️⃣ Skills（技能）：给 Agent 挂载的插件（如 Cloudflare 管理、启动器）。\n\n3️⃣ Teams（团队）：预置的多 Agent 协作方案。\n\n核心逻辑：解决 AI 的“幻觉”和“执行力差”，直接交付生产级 Prompt。\n\n目前 souls的挂单：\n\n💰 高级 Agent 定价 $29 - $149。\n\n🛠️ 很多免费的 Skills 其实就是我们日常写的自动化逻辑。\n\n这代表 AI 行业正在从“卖算力/卖接口”转向“卖经过调优的垂直业务逻辑”。",
+      "createdAt": "Mon Mar 09 09:50:00 +0000 2026",
+      "replyCount": 19,
+      "retweetCount": 54,
+      "likeCount": 204,
+      "conversationId": "2030944180038471851",
+      "author": {
+        "username": "oragnes",
+        "name": "比特币橙子Trader"
+      },
+      "authorId": "892286366381359105",
+      "media": [
+        {
+          "type": "video",
+          "url": "https://pbs.twimg.com/amplify_video_thumb/2030932316953137152/img/Qos3UHksLW5B4L1M.jpg",
+          "width": 814,
+          "height": 480,
+          "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2030932316953137152/img/Qos3UHksLW5B4L1M.jpg:small",
+          "videoUrl": "https://video.twimg.com/amplify_video/2030932316953137152/vid/avc1/814x480/CejEvero7xscoww-.mp4?tag=21",
+          "durationMs": 106100
+        }
+      ]
+    }
+  },
+  {
+    "id": "2030525899687575622",
+    "text": "赞同",
+    "createdAt": "Sun Mar 08 06:07:54 +0000 2026",
+    "replyCount": 0,
+    "retweetCount": 0,
+    "likeCount": 1,
+    "conversationId": "2030525899687575622",
+    "author": {
+      "username": "0xpeterlee",
+      "name": "耐心Peter"
+    },
+    "authorId": "1717372691270053888",
+    "quotedTweet": {
+      "id": "2030445824938037486",
+      "text": "很多人缺乏执行力，不是能力问题，而是“状态洁癖”。人们总在等待一个完美状态，睡眠充足、心情良好、环境整洁、灵感充沛，才开始行动，但现实是这种完美时刻几乎不存在。于是，大脑会用各种看似合理的理由（天气不好、没休息好、先整理环境等）来拖延，本质上是在逃避行动中必然要付出的不舒服、痛苦和不确定性成本。真正高执行力的人并不是状态更好，而是接受在状态不好、情绪一般、环境普通的情况下也照样开始做事。一旦放弃对完美状态的执念，把“先行动再调整”当成默认模式，就能大幅提升行动频率和产出。",
+      "createdAt": "Sun Mar 08 00:49:43 +0000 2026",
+      "replyCount": 29,
+      "retweetCount": 329,
+      "likeCount": 1480,
+      "conversationId": "2030445824938037486",
+      "author": {
+        "username": "Morris_LT",
+        "name": "Morris"
+      },
+      "authorId": "51904755"
+    }
+  },
+  {
+    "id": "2030515523063284112",
+    "text": "期待了半年，拉完了",
+    "createdAt": "Sun Mar 08 05:26:40 +0000 2026",
+    "replyCount": 0,
+    "retweetCount": 0,
+    "likeCount": 0,
+    "conversationId": "2030515523063284112",
+    "author": {
+      "username": "0xpeterlee",
+      "name": "耐心Peter"
+    },
+    "authorId": "1717372691270053888",
+    "quotedTweet": {
+      "id": "2030485076988018772",
+      "text": "THE OFFICIAL BOUT LIST FOR #UFCWhiteHouse\n\n[ LIVE Sunday June 14 on @ParamountPlus ] https://t.co/06d09Tm0jZ",
+      "createdAt": "Sun Mar 08 03:25:41 +0000 2026",
+      "replyCount": 4191,
+      "retweetCount": 5042,
+      "likeCount": 44946,
+      "conversationId": "2030485076988018772",
+      "author": {
+        "username": "ufc",
+        "name": "UFC"
+      },
+      "authorId": "6446742",
+      "media": [
+        {
+          "type": "photo",
+          "url": "https://pbs.twimg.com/media/HC27MVebkAE3jYL.jpg",
+          "width": 1080,
+          "height": 1350,
+          "previewUrl": "https://pbs.twimg.com/media/HC27MVebkAE3jYL.jpg:small"
+        }
+      ]
+    }
+  },
+  {
+    "id": "2030245754091262420",
+    "text": "为什么两个月前X已经玩烂的东西，最近国内这么火？信息差这么大？",
+    "createdAt": "Sat Mar 07 11:34:42 +0000 2026",
+    "replyCount": 0,
+    "retweetCount": 0,
+    "likeCount": 0,
+    "conversationId": "2030245754091262420",
+    "author": {
+      "username": "0xpeterlee",
+      "name": "耐心Peter"
+    },
+    "authorId": "1717372691270053888"
+  }
+]
