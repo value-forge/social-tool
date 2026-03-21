@@ -30,6 +30,9 @@ func main() {
 		log.Fatalf("load config: %v", err)
 	}
 
+	// 设置环境变量以解决 TLS 证书验证问题
+	os.Setenv("NODE_TLS_REJECT_UNAUTHORIZED", "0")
+
 	dataLayer, cleanup, err := data.NewData(bc.Data)
 	if err != nil {
 		log.Fatalf("init data: %v", err)
@@ -38,6 +41,10 @@ func main() {
 
 	userRepo := data.NewUserRepo(dataLayer)
 	connRepo := data.NewPlatformConnectionRepo(dataLayer)
+	followingRepo := data.NewTwitterFollowingRepo(dataLayer)
+	monitoredAccountRepo := data.NewMonitoredAccountRepo(dataLayer)
+	tweetRepo := data.NewTweetRepo(dataLayer)
+	tweetCommentRepo := data.NewTweetCommentRepo(dataLayer)
 
 	twitterOAuth := auth.NewTwitterOAuth(
 		bc.Twitter.ClientId,
@@ -48,7 +55,7 @@ func main() {
 
 	authUC := biz.NewAuthUsecase(twitterOAuth, jwtManager, userRepo, connRepo)
 	twAdapter := twitter.NewAdapter()
-	socialUC := biz.NewSocialUsecase(connRepo, twAdapter, twitterOAuth)
+	socialUC := biz.NewSocialUsecase(connRepo, twAdapter, twitterOAuth, followingRepo, monitoredAccountRepo, tweetRepo, tweetCommentRepo)
 
 	httpServer := server.NewHTTPServer(authUC, socialUC, jwtManager)
 
@@ -93,6 +100,10 @@ func loadConfig(path string) (*conf.Bootstrap, error) {
 			CallbackURL  string `yaml:"callback_url"`
 			BearerToken  string `yaml:"bearer_token"`
 		} `yaml:"twitter"`
+		Bird struct {
+			AuthToken string `yaml:"auth_token"`
+			Ct0       string `yaml:"ct0"`
+		} `yaml:"bird"`
 		LLM struct {
 			KimiAPIKey   string `yaml:"kimi_api_key"`
 			ClaudeAPIKey string `yaml:"claude_api_key"`
@@ -101,6 +112,16 @@ func loadConfig(path string) (*conf.Bootstrap, error) {
 
 	if err := yaml.Unmarshal(raw, &yamlConf); err != nil {
 		return nil, fmt.Errorf("unmarshal yaml: %w", err)
+	}
+
+	// 设置 bird-cli token 环境变量（从配置文件读取）
+	if yamlConf.Bird.AuthToken != "" {
+		os.Setenv("AUTH_TOKEN", yamlConf.Bird.AuthToken)
+		fmt.Println("[config] AUTH_TOKEN loaded from config")
+	}
+	if yamlConf.Bird.Ct0 != "" {
+		os.Setenv("CT0", yamlConf.Bird.Ct0)
+		fmt.Println("[config] CT0 loaded from config")
 	}
 
 	return &conf.Bootstrap{
@@ -134,4 +155,12 @@ func loadConfig(path string) (*conf.Bootstrap, error) {
 			ClaudeApiKey: yamlConf.LLM.ClaudeAPIKey,
 		},
 	}, nil
+}
+
+func init() {
+	// 从配置文件加载 bird token 到环境变量（如果存在）
+	// 这样 bird-cli 可以读取到这些值
+	if authToken := os.Getenv("AUTH_TOKEN"); authToken == "" {
+		// 稍后从配置文件读取
+	}
 }

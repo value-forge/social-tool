@@ -10,6 +10,12 @@
 # Go
 backend/vendor/
 backend/cmd/server/wire_gen.go
+backend/server
+backend/1
+backend/*.json
+!backend/configs/*.json
+backend/cmd/import_real_data/
+backend/cmd/real_data_server/
 
 # Node
 frontend/node_modules/
@@ -26,3 +32,15 @@ frontend/.vite/
 # Docker volumes
 mongo_data/
 redis_data/
+
+# Scripts
+import_tweets.sh
+start.sh
+
+# Data files
+raw_output.txt
+real_data.json
+real_following.json
+real_following_clean.json
+real_tweets.json
+tweets_*.json

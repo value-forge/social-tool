@@ -20,34 +20,37 @@ type AccountInfo struct {
 	Bio            string
 	FollowerCount  int64
 	FollowingCount int64
+	IsBlueVerified bool
 }
 
 type Post struct {
-	PlatformPostID    string
-	AuthorUsername    string
-	AuthorDisplayName string
-	AuthorAvatarURL  string
-	Content          string
-	MediaURLs        []string
-	PostURL          string
-	PublishedAt      time.Time
-	LikeCount        int64
-	RepostCount      int64
-	ReplyCount       int64
-	IsReply          bool
-	Language         string
-	PlatformExtra    map[string]interface{}
+	PlatformPostID       string
+	AuthorUsername       string
+	AuthorDisplayName    string
+	AuthorAvatarURL      string
+	AuthorIsBlueVerified bool
+	Content              string
+	MediaURLs            []string
+	PostURL              string
+	PublishedAt          time.Time
+	LikeCount            int64
+	RepostCount          int64
+	ReplyCount           int64
+	IsReply              bool
+	Language             string
+	PlatformExtra        map[string]interface{}
 }
 
 type PostComment struct {
-	PlatformCommentID string
-	AuthorUsername    string
-	AuthorDisplayName string
-	AuthorAvatarURL  string
-	Content          string
-	LikeCount        int64
-	PublishedAt      time.Time
-	Rank             int
+	PlatformCommentID    string
+	AuthorUsername       string
+	AuthorDisplayName    string
+	AuthorAvatarURL      string
+	AuthorIsBlueVerified bool
+	Content              string
+	LikeCount            int64
+	PublishedAt          time.Time
+	Rank                 int
 }
 
 type TrendingRaw struct {

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { twitterCallback } from '../../api/auth'
+import { queryClient } from '../../lib/queryClient'
 
 export default function CallbackPage() {
   const [searchParams] = useSearchParams()
@@ -25,6 +26,7 @@ export default function CallbackPage() {
 
     twitterCallback(code, state, codeVerifier)
       .then((result) => {
+        queryClient.clear()
         localStorage.setItem('access_token', result.access_token)
         localStorage.setItem('refresh_token', result.refresh_token)
         sessionStorage.removeItem('oauth_state')

@@ -21,7 +21,8 @@ func min(a, b int) int {
 }
 
 const (
-	twitterAuthURL = "https://twitter.com/i/oauth2/authorize"
+	// 与浏览器里常登录的域名一致；仅用 twitter.com 可能导致与 x.com 会话不同步、授权页仍显示旧账号
+	twitterAuthURL  = "https://x.com/i/oauth2/authorize"
 	twitterTokenURL = "https://api.twitter.com/2/oauth2/token"
 	twitterUserURL  = "https://api.twitter.com/2/users/me"
 )
@@ -80,7 +81,10 @@ func (t *TwitterOAuth) GenerateState() (string, error) {
 	return base64.RawURLEncoding.EncodeToString(b), nil
 }
 
-func (t *TwitterOAuth) GetAuthURL(state, codeChallenge string) string {
+// GetAuthURL 构建 X OAuth2 授权链接。
+// 默认带 prompt=login，强制走 X 登录页以便切换账号（仅 select_account 在 X 上常不生效）。
+// skipLoginPrompt 为 true 时不传 prompt，适合本机已确认账号无误、想少输一次密码时使用（可能仍显示浏览器当前 X 会话）。
+func (t *TwitterOAuth) GetAuthURL(state, codeChallenge string, skipLoginPrompt bool) string {
 	params := url.Values{
 		"response_type":         {"code"},
 		"client_id":             {t.ClientID},
@@ -89,6 +93,11 @@ func (t *TwitterOAuth) GetAuthURL(state, codeChallenge string) string {
 		"state":                 {state},
 		"code_challenge":        {codeChallenge},
 		"code_challenge_method": {"S256"},
+	}
+	if !skipLoginPrompt {
+		// OIDC：要求重新认证（与 prompt=login 叠加，部分 IdP 会认）
+		params.Set("prompt", "login")
+		params.Set("max_age", "0")
 	}
 	return fmt.Sprintf("%s?%s", twitterAuthURL, params.Encode())
 }

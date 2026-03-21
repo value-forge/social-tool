@@ -1,0 +1,31 @@
+server:
+  http:
+    addr: 0.0.0.0:8888
+    timeout: 30s
+  grpc:
+    addr: 0.0.0.0:9000
+    timeout: 30s
+
+data:
+  mongodb_uri: mongodb://localhost:27017
+  redis_uri: redis://localhost:6379/0
+  database: social_tool
+
+auth:
+  jwt_secret: change-me-to-a-random-string
+  encryption_key: change-me-32-bytes-aes256-key!!
+
+twitter:
+  client_id: your-twitter-client-id
+  client_secret: your-twitter-client-secret
+  callback_url: http://127.0.0.1:5173/auth/twitter/callback
+  bearer_token: your-twitter-bearer-token
+
+# bird-cli 配置（当 Chrome cookies 不可用时使用）
+bird:
+  auth_token: your-auth-token
+  ct0: your-ct0-token
+
+llm:
+  kimi_api_key: ${KIMI_API_KEY}
+  claude_api_key: ${CLAUDE_API_KEY}

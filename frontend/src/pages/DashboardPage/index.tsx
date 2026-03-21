@@ -25,6 +25,8 @@ import {
 import { useAuth } from '../../hooks/useAuth'
 import { useThemeMode } from '../../theme/ThemeProvider'
 import FollowingListPanel from '../../components/dashboard/FollowingListPanel'
+import MonitoredAccountsPanel from '../../components/dashboard/MonitoredAccountsPanel'
+import TweetsPanel from '../../components/dashboard/TweetsPanel'
 
 const { Sider, Header, Content } = Layout
 const { Text } = Typography
@@ -114,6 +116,8 @@ export default function DashboardPage() {
   const pageTitle = MENU_PAGE_TITLE[activeKey] ?? '控制台'
   const showDashboardHome = activeKey === 'dashboard'
   const showFollowingList = activeKey === 'following'
+  const showMonitoredAccounts = activeKey === 'accounts'
+  const showTweets = activeKey === 'tweets'
 
   return (
     <Layout style={{ minHeight: '100vh', background: token.colorBgLayout }}>
@@ -207,22 +211,6 @@ export default function DashboardPage() {
               title={mode === 'dark' ? '切换为浅色' : '切换为深色'}
               style={{ color: token.colorTextSecondary }}
             />
-            <span
-              style={{
-                fontSize: 11,
-                fontWeight: 500,
-                padding: '4px 10px',
-                borderRadius: 999,
-                background: 'rgba(34,197,94,0.12)',
-                color: '#22c55e',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-              }}
-            >
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e' }} />
-              X 已连接
-            </span>
             {user && (
               <>
                 <Divider type="vertical" style={{ height: 24, margin: 0, borderColor: token.colorBorderSecondary }} />
@@ -262,8 +250,12 @@ export default function DashboardPage() {
             <Text type="secondary" style={{ display: 'block', marginTop: 8, marginBottom: 32 }}>
               {showDashboardHome && '监控动态 · AI 起草 · 追踪热点'}
               {showFollowingList &&
-                '使用登录时授权的 X 账号，从服务端拉取你的关注列表（需 OAuth 范围 follows.read）。'}
-              {!showDashboardHome && !showFollowingList && '该功能开发中，后续将在此展示对应页面'}
+                '使用 bird-cli 从当前 Chrome 登录的 X 账号拉取关注列表（无需 OAuth，直接读取 Chrome Cookies）。'}
+              {showMonitoredAccounts &&
+                '管理已添加监控的 Twitter 账号，系统将自动追踪这些账号的新推文。'}
+              {showTweets &&
+                '查看监控账号的最新推文动态，包括点赞、转发、评论等互动数据。'}
+              {!showDashboardHome && !showFollowingList && !showMonitoredAccounts && !showTweets && '该功能开发中，后续将在此展示对应页面'}
             </Text>
 
             {showFollowingList && (
@@ -280,7 +272,35 @@ export default function DashboardPage() {
               </div>
             )}
 
-            {!showDashboardHome && !showFollowingList && (
+            {showMonitoredAccounts && (
+              <div
+                style={{
+                  padding: 24,
+                  marginBottom: 32,
+                  borderRadius: token.borderRadiusLG,
+                  background: token.colorBgContainer,
+                  border: `1px solid ${token.colorBorderSecondary}`,
+                }}
+              >
+                <MonitoredAccountsPanel />
+              </div>
+            )}
+
+            {showTweets && (
+              <div
+                style={{
+                  padding: 24,
+                  marginBottom: 32,
+                  borderRadius: token.borderRadiusLG,
+                  background: token.colorBgContainer,
+                  border: `1px solid ${token.colorBorderSecondary}`,
+                }}
+              >
+                <TweetsPanel />
+              </div>
+            )}
+
+            {!showDashboardHome && !showFollowingList && !showMonitoredAccounts && !showTweets && (
               <div
                 style={{
                   padding: 24,
@@ -336,8 +356,7 @@ export default function DashboardPage() {
             )}
 
             {showDashboardHome && (
-            <div style={{ display: 'grid', gridTemplateColumns: '3fr 2fr', gap: 24 }}>
-              <div>
+            <div>
                 <Text strong style={{ fontSize: 13, color: token.colorTextTertiary, display: 'block', marginBottom: 12 }}>
                   快捷操作
                 </Text>
@@ -392,93 +411,6 @@ export default function DashboardPage() {
                     </a>
                   ))}
                 </div>
-              </div>
-
-              <div>
-                <Text strong style={{ fontSize: 13, color: token.colorTextTertiary, display: 'block', marginBottom: 12 }}>
-                  系统状态
-                </Text>
-                <div
-                  style={{
-                    padding: 20,
-                    borderRadius: token.borderRadiusLG,
-                    background: token.colorBgContainer,
-                    border: `1px solid ${token.colorBorderSecondary}`,
-                  }}
-                >
-                  <Text type="secondary" style={{ fontSize: 12, fontWeight: 600, display: 'block', marginBottom: 12 }}>
-                    平台连接
-                  </Text>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <div
-                        style={{
-                          width: 32,
-                          height: 32,
-                          borderRadius: token.borderRadius,
-                          background: token.colorFillTertiary,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: token.colorText,
-                        }}
-                      >
-                        <XIcon size={14} />
-                      </div>
-                      <div>
-                        <div style={{ fontSize: 13, fontWeight: 500, color: token.colorText }}>X (Twitter)</div>
-                        <Text type="secondary" style={{ fontSize: 11 }}>@{user?.twitter_username || '—'}</Text>
-                      </div>
-                    </div>
-                    <span
-                      style={{
-                        fontSize: 11,
-                        fontWeight: 600,
-                        padding: '4px 8px',
-                        borderRadius: token.borderRadiusSM,
-                        background: 'rgba(34,197,94,0.1)',
-                        color: '#22c55e',
-                      }}
-                    >
-                      ACTIVE
-                    </span>
-                  </div>
-
-                  <Divider style={{ margin: '16px 0', borderColor: token.colorBorderSecondary }} />
-
-                  <Text type="secondary" style={{ fontSize: 12, fontWeight: 600, display: 'block', marginBottom: 12 }}>
-                    LLM 配置
-                  </Text>
-                  <div style={{ marginBottom: 20 }}>
-                    {[
-                      { name: 'Kimi (Moonshot)', ok: true },
-                      { name: 'Claude', ok: false },
-                    ].map((l) => (
-                      <div key={l.name} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0' }}>
-                        <Text style={{ fontSize: 13, color: token.colorTextSecondary }}>{l.name}</Text>
-                        <span
-                          style={{
-                            fontSize: 11,
-                            padding: '2px 8px',
-                            borderRadius: token.borderRadiusSM,
-                            background: l.ok ? 'rgba(34,197,94,0.1)' : token.colorFillTertiary,
-                            color: l.ok ? '#22c55e' : token.colorTextQuaternary,
-                          }}
-                        >
-                          {l.ok ? '已配置' : '未配置'}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <Divider style={{ margin: '16px 0', borderColor: token.colorBorderSecondary }} />
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Text type="secondary" style={{ fontSize: 12, fontWeight: 600 }}>今日 LLM 调用</Text>
-                    <span style={{ fontSize: 18, fontWeight: 700, color: token.colorText }}>0</span>
-                  </div>
-                </div>
-              </div>
             </div>
             )}
           </div>

@@ -39,7 +39,8 @@ type OAuthURLResult struct {
 	CodeVerifier  string
 }
 
-func (uc *AuthUsecase) GetTwitterOAuthURL() (*OAuthURLResult, error) {
+// skipLoginPrompt 为 true 时授权 URL 不带 prompt=login（见 TwitterOAuth.GetAuthURL）。
+func (uc *AuthUsecase) GetTwitterOAuthURL(skipLoginPrompt bool) (*OAuthURLResult, error) {
 	state, err := uc.twitterOAuth.GenerateState()
 	if err != nil {
 		return nil, fmt.Errorf("generate state: %w", err)
@@ -49,7 +50,7 @@ func (uc *AuthUsecase) GetTwitterOAuthURL() (*OAuthURLResult, error) {
 		return nil, fmt.Errorf("generate verifier: %w", err)
 	}
 	challenge := uc.twitterOAuth.GenerateCodeChallenge(verifier)
-	url := uc.twitterOAuth.GetAuthURL(state, challenge)
+	url := uc.twitterOAuth.GetAuthURL(state, challenge, skipLoginPrompt)
 
 	return &OAuthURLResult{
 		URL:          url,
