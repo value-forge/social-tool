@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import {
   Layout,
   Menu,
@@ -21,12 +21,18 @@ import {
   SettingOutlined,
   MoonOutlined,
   SunOutlined,
+  LinkOutlined,
 } from '@ant-design/icons'
 import { useAuth } from '../../hooks/useAuth'
 import { useThemeMode } from '../../theme/ThemeProvider'
 import FollowingListPanel from '../../components/dashboard/FollowingListPanel'
 import MonitoredAccountsPanel from '../../components/dashboard/MonitoredAccountsPanel'
 import TweetsPanel from '../../components/dashboard/TweetsPanel'
+import DraftHistoryPage from '../DraftHistoryPage'
+import PlatformConnectionsPage from '../PlatformConnectionsPage'
+import DingTalkConfigPage from '../DingTalkConfigPage'
+import TweetDetailPanel from '../TweetDetailPanel'
+import TrendingPage from '../TrendingPage'
 
 const { Sider, Header, Content } = Layout
 const { Text } = Typography
@@ -60,11 +66,12 @@ const MENU_ITEMS: MenuProps['items'] = [
     icon: <BellOutlined />,
     label: '推送',
     children: [
-      { key: 'ding', label: '钉钉配置' },
+      { key: 'dingtalk', label: '钉钉配置' },
       { key: 'feishu', label: '飞书配置' },
     ],
   },
   { key: 'settings', icon: <SettingOutlined />, label: '设置' },
+  { key: 'platforms', icon: <LinkOutlined />, label: '平台连接' },
 ]
 
 /** 菜单 key → 页面标题（用于主区域展示） */
@@ -73,12 +80,14 @@ const MENU_PAGE_TITLE: Record<string, string> = {
   following: '关注列表',
   accounts: '监控账号',
   tweets: '推文动态',
+  tweet_detail: '推文详情',
   trending: '热点大盘',
   drafts: '草稿历史',
   ai: 'AI 起草',
-  ding: '钉钉配置',
+  dingtalk: '钉钉配置',
   feishu: '飞书配置',
   settings: '设置',
+  platforms: '平台连接',
 }
 
 export default function DashboardPage() {
@@ -87,6 +96,12 @@ export default function DashboardPage() {
   const menuTheme = mode === 'dark' ? 'dark' : 'light'
   const { user, loading, isAuthenticated, logout } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  
+  // 解析 URL 查询参数
+  const searchParams = new URLSearchParams(location.search)
+  const tweetId = searchParams.get('tweet_id')
+  
   const [selectedKeys, setSelectedKeys] = useState<string[]>(['dashboard'])
 
   useEffect(() => {
@@ -94,6 +109,15 @@ export default function DashboardPage() {
       navigate('/login', { replace: true })
     }
   }, [loading, isAuthenticated, navigate])
+
+  // 根据 URL 查询参数设置 tab
+  useEffect(() => {
+    if (tweetId) {
+      setSelectedKeys(['tweet_detail'])
+    } else {
+      setSelectedKeys(['dashboard'])
+    }
+  }, [tweetId])
 
   if (loading) {
     return (
@@ -109,15 +133,30 @@ export default function DashboardPage() {
   const onMenuClick: MenuProps['onClick'] = (info) => {
     // 忽略分割线等无业务 key
     if (!info.key || String(info.key).startsWith('menu-divider')) return
-    setSelectedKeys([String(info.key)])
+    
+    const key = String(info.key)
+    
+    // 如果有 tweet_id，点击其他菜单时清除它
+    if (tweetId && key !== 'tweet_detail') {
+      navigate(`/?tab=${key}`, { replace: true })
+    }
+    
+    setSelectedKeys([key])
   }
 
   const activeKey = selectedKeys[0] ?? 'dashboard'
   const pageTitle = MENU_PAGE_TITLE[activeKey] ?? '控制台'
+  
+  // 页面显示控制
   const showDashboardHome = activeKey === 'dashboard'
   const showFollowingList = activeKey === 'following'
   const showMonitoredAccounts = activeKey === 'accounts'
   const showTweets = activeKey === 'tweets'
+  const showTrending = activeKey === 'trending'
+  const showDrafts = activeKey === 'drafts'
+  const showPlatforms = activeKey === 'platforms'
+  const showDingTalk = activeKey === 'dingtalk'
+  const showTweetDetail = activeKey === 'tweet_detail' && tweetId
 
   return (
     <Layout style={{ minHeight: '100vh', background: token.colorBgLayout }}>
@@ -162,7 +201,7 @@ export default function DashboardPage() {
           </span>
         </div>
 
-        {/* 菜单：占满中间高度；展开态用 defaultOpenKeys 非受控，避免受控 openKeys 导致点击/展开失效 */}
+        {/* 菜单 */}
         <div
           style={{
             flex: 1,
@@ -243,7 +282,7 @@ export default function DashboardPage() {
         </Header>
 
         <Content style={{ overflow: 'auto' }}>
-          <div style={{ maxWidth: 1120, margin: '0 auto', padding: '32px 40px 40px' }}>
+          <div style={{ maxWidth: showTweetDetail ? '100%' : 1120, margin: '0 auto', padding: '32px 40px 40px' }}>
             <Typography.Title level={3} style={{ margin: 0, color: token.colorText }}>
               {pageTitle}
             </Typography.Title>
@@ -255,7 +294,17 @@ export default function DashboardPage() {
                 '管理已添加监控的 Twitter 账号，系统将自动追踪这些账号的新推文。'}
               {showTweets &&
                 '查看监控账号的最新推文动态，包括点赞、转发、评论等互动数据。'}
-              {!showDashboardHome && !showFollowingList && !showMonitoredAccounts && !showTweets && '该功能开发中，后续将在此展示对应页面'}
+              {showTrending &&
+                '实时监控 Twitter 热点话题，追踪话题出现次数与生命周期，AI 分析热点核心内容并提供写作建议。'}
+              {showDrafts &&
+                '查看和管理所有 AI 生成的回复草稿，支持编辑、复制和评分。'}
+              {showPlatforms &&
+                '连接社交媒体平台，授权系统读取数据以进行监控和分析。'}
+              {showDingTalk &&
+                '配置钉钉机器人，接收新推文、草稿生成、热点更新等消息推送。'}
+              {showTweetDetail &&
+                '查看推文详情、评论，并生成 AI 回复草稿。'}
+              {!showDashboardHome && !showFollowingList && !showMonitoredAccounts && !showTweets && !showTrending && !showDrafts && !showPlatforms && !showDingTalk && !showTweetDetail && '该功能开发中，后续将在此展示对应页面'}
             </Text>
 
             {showFollowingList && (
@@ -300,7 +349,65 @@ export default function DashboardPage() {
               </div>
             )}
 
-            {!showDashboardHome && !showFollowingList && !showMonitoredAccounts && !showTweets && (
+            {showTrending && <TrendingPage />}
+
+            {showDrafts && (
+              <div
+                style={{
+                  padding: 24,
+                  marginBottom: 32,
+                  borderRadius: token.borderRadiusLG,
+                  background: token.colorBgContainer,
+                  border: `1px solid ${token.colorBorderSecondary}`,
+                }}
+              >
+                <DraftHistoryPage />
+              </div>
+            )}
+
+            {showPlatforms && (
+              <div
+                style={{
+                  padding: 24,
+                  marginBottom: 32,
+                  borderRadius: token.borderRadiusLG,
+                  background: token.colorBgContainer,
+                  border: `1px solid ${token.colorBorderSecondary}`,
+                }}
+              >
+                <PlatformConnectionsPage />
+              </div>
+            )}
+
+            {showDingTalk && (
+              <div
+                style={{
+                  padding: 24,
+                  marginBottom: 32,
+                  borderRadius: token.borderRadiusLG,
+                  background: token.colorBgContainer,
+                  border: `1px solid ${token.colorBorderSecondary}`,
+                }}
+              >
+                <DingTalkConfigPage />
+              </div>
+            )}
+
+            {showTweetDetail && tweetId && (
+              <div
+                style={{
+                  padding: 24,
+                  marginBottom: 32,
+                  borderRadius: token.borderRadiusLG,
+                  background: token.colorBgContainer,
+                  border: `1px solid ${token.colorBorderSecondary}`,
+                }}
+              >
+                <TweetDetailPanel tweetId={tweetId} />
+              </div>
+            )}
+
+            {!showDashboardHome && !showFollowingList && !showMonitoredAccounts && !showTweets && !showTrending && !showDrafts && !showPlatforms && !showDingTalk && !showTweetDetail && (
               <div
                 style={{
                   padding: 24,

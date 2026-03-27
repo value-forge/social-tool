@@ -1,0 +1,19 @@
+2026-03-21T15:01:09.018+0800 I  CONTROL  [main] Automatically disabling TLS 1.0, to force-enable TLS 1.0 specify --sslDisabledProtocols 'none'
+2026-03-21T15:01:09.020+0800 W  ASIO     [main] No TransportLayer configured during NetworkInterface startup
+2026-03-21T15:01:09.021+0800 I  CONTROL  [initandlisten] MongoDB starting : pid=48653 port=27017 dbpath=/Users/zuiyou/.openclaw/workspace/project/social-tool/data/mongo 64-bit host=lijundeMac-mini.local
+2026-03-21T15:01:09.021+0800 I  CONTROL  [initandlisten] db version v4.2.8
+2026-03-21T15:01:09.021+0800 I  CONTROL  [initandlisten] git version: 43d25964249164d76d5e04dd6cf38f6111e21f5f
+2026-03-21T15:01:09.021+0800 I  CONTROL  [initandlisten] allocator: system
+2026-03-21T15:01:09.021+0800 I  CONTROL  [initandlisten] modules: none
+2026-03-21T15:01:09.021+0800 I  CONTROL  [initandlisten] build environment:
+2026-03-21T15:01:09.021+0800 I  CONTROL  [initandlisten]     distarch: x86_64
+2026-03-21T15:01:09.021+0800 I  CONTROL  [initandlisten]     target_arch: x86_64
+2026-03-21T15:01:09.021+0800 I  CONTROL  [initandlisten] machdep.cpu.extfeatures unavailable
+2026-03-21T15:01:09.021+0800 I  CONTROL  [initandlisten] options: { net: { port: 27017 }, processManagement: { fork: true }, storage: { dbPath: "/Users/zuiyou/.openclaw/workspace/project/social-tool/data/mongo" }, systemLog: { destination: "file", path: "/Users/zuiyou/.openclaw/workspace/project/social-tool/data/mongo/mongod.log" } }
+2026-03-21T15:01:09.021+0800 E  NETWORK  [initandlisten] Failed to unlink socket file /tmp/mongodb-27017.sock Permission denied
+2026-03-21T15:01:09.021+0800 F  -        [initandlisten] Fatal Assertion 40486 at src/mongo/transport/transport_layer_asio.cpp 684
+2026-03-21T15:01:09.021+0800 F  -        [initandlisten] 
+
+***aborting after fassert() failure
+
+

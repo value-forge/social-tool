@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 40px; background: #f5f5f5; }
+.container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+h1 { color: #333; border-bottom: 2px solid #2196F3; padding-bottom: 10px; }
+h2 { color: #2196F3; margin-top: 30px; }
+pre { background: #f8f9fa; padding: 15px; border-radius: 6px; overflow-x: auto; border-left: 4px solid #2196F3; }
+table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+th { background: #2196F3; color: white; }
+.example { background: #e3f2fd; padding: 15px; border-radius: 6px; margin: 20px 0; }
+</style>
+</head>
+<body>
+<div class="container">
+<h1>📱 Backend 项目说明</h1>
+
+<h2>项目简介</h2>
+<p>社交媒体工具后端服务，用于抓取 Twitter 推文并通过 AI 分析给出评论建议，推送到钉钉。</p>
+
+<h2>钉钉推送格式</h2>
+<p>当 AI 分析完成推文后，会发送如下格式的消息到钉钉：</p>
+
+<pre>
+📱 推特：@{作者用户名}
+
+📝 内容：
+{推文原文}
+
+💬 AI总结：
+{AI生成的内容摘要}
+
+⭐ 评分：{评分}/10
+
+💡 评论建议：
+{AI给出的评论建议}
+
+👍 {点赞数} 💬 {回复数} 🔄 {转发数}
+
+🔗 {推文链接}
+</pre>
+
+<h2>字段说明</h2>
+<table>
+<tr><th>字段</th><th>说明</th></tr>
+<tr><td>作者用户名</td><td>Twitter 用户的 @handle</td></tr>
+<tr><td>推文原文</td><td>完整的推文内容</td></tr>
+<tr><td>AI总结</td><td>Kimi AI 生成的内容摘要</td></tr>
+<tr><td>评分</td><td>1-10 分，评估话题热度、评论空间、涨粉潜力</td></tr>
+<tr><td>评论建议</td><td>AI 给出的具体评论建议</td></tr>
+<tr><td>点赞数/回复数/转发数</td><td>推文的互动数据</td></tr>
+<tr><td>推文链接</td><td>点击跳转到原推文</td></tr>
+</table>
+
+<h2>示例</h2>
+<div class="example">
+<pre>
+📱 推特：@XXY177
+
+📝 内容：
+以为是德高望重的长者，结果是位绅士君子
+你们没发现吗，一般长寿的，都是老人
+
+💬 AI总结：
+这是一条幽默类推文，用反转手法制造笑点...
+
+⭐ 评分：7.0/10
+
+💡 评论建议：
+可以从幽默角度回应，比如"长寿的秘诀是保持绅士风度吗😄"
+
+👍 42 💬 8 🔄 5
+
+🔗 https://x.com/XXY177/status/2037341207186243976
+</pre>
+</div>
+
+<h2>技术栈</h2>
+<ul>
+<li>Go 1.24</li>
+<li>MongoDB</li>
+<li>OpenClaw ACP (Kimi AI)</li>
+<li>DingTalk Webhook</li>
+</ul>
+
+<h2>运行方式</h2>
+<pre>
+# 启动 MongoDB
+docker-compose up -d
+
+# 编译并运行 Worker
+./worker
+</pre>
+
+<h2>配置项</h2>
+<table>
+<tr><th>变量</th><th>默认值</th><th>说明</th></tr>
+<tr><td>MONGODB_URI</td><td>mongodb://admin:password@localhost:27017/social_tool</td><td>MongoDB 连接字符串</td></tr>
+<tr><td>MONGODB_DB</td><td>social_tool</td><td>数据库名</td></tr>
+<tr><td>DINGTALK_WEBHOOK</td><td>-</td><td>钉钉机器人 Webhook 地址</td></tr>
+<tr><td>FETCH_INTERVAL</td><td>5m</td><td>抓取间隔</td></tr>
+<tr><td>LOG_LEVEL</td><td>info</td><td>日志级别</td></tr>
+</table>
+
+</div>
+</body>
+</html>

@@ -1,13 +1,15 @@
 import { useMemo, useState, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
-import { 
-  Alert, Avatar, Button, Spin, Typography, Tag, Empty, Card, Divider, 
-  Space, Tooltip, Collapse, message, theme as antTheme 
+import {
+  Alert, Avatar, Button, Spin, Typography, Tag, Empty, Card, Divider,
+  Space, Tooltip, Collapse, message, theme as antTheme
 } from 'antd'
-import { 
+import {
   HeartOutlined, RetweetOutlined, MessageOutlined, EyeOutlined,
-  SyncOutlined, UserOutlined, ClockCircleOutlined, LinkOutlined
+  SyncOutlined, UserOutlined, ClockCircleOutlined, LinkOutlined,
+  RobotOutlined
 } from '@ant-design/icons'
 import { getApiPrefix } from '../../api/apiPrefix'
 
@@ -89,7 +91,7 @@ function formatTime(dateStr: string): string {
   const minutes = Math.floor(diff / 60000)
   const hours = Math.floor(diff / 3600000)
   const days = Math.floor(diff / 86400000)
-  
+
   if (minutes < 60) return `${minutes}分钟前`
   if (hours < 24) return `${hours}小时前`
   if (days < 7) return `${days}天前`
@@ -97,21 +99,27 @@ function formatTime(dateStr: string): string {
 }
 
 // 单条推文组件
-function TweetCard({ 
-  tweet, 
-  isExpanded, 
+function TweetCard({
+  tweet,
+  isExpanded,
   onExpand,
   storageUserId,
-}: { 
+}: {
   tweet: Tweet
   isExpanded: boolean
   onExpand: (expanded: boolean) => void
   storageUserId: string
 }) {
   const { token } = antTheme.useToken()
+  const navigate = useNavigate()
   const [comments, setComments] = useState<TweetComment[]>([])
   const [loading, setLoading] = useState(false)
   const [loaded, setLoaded] = useState(false)
+
+  // 点击进入详情
+  const handleClickDetail = () => {
+    navigate(`/?tweet_id=${tweet.id}`)
+  }
 
   const handleExpand = useCallback(async (expanded: boolean) => {
     onExpand(expanded)
@@ -133,18 +141,27 @@ function TweetCard({
   }, [tweet.platform_post_id, loaded, onExpand, storageUserId])
 
   return (
-    <Card 
-      style={{ 
+    <Card
+      style={{
         background: token.colorBgContainer,
         borderRadius: token.borderRadiusLG,
-        marginBottom: 16
+        marginBottom: 16,
+        cursor: 'pointer',
+        transition: 'all 0.2s',
       }}
       bodyStyle={{ padding: 20 }}
+      onClick={handleClickDetail}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)'
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.boxShadow = 'none'
+      }}
     >
       {/* 推文头部 */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
-        <Avatar 
-          src={tweet.author_avatar_url} 
+        <Avatar
+          src={tweet.author_avatar_url}
           size={48}
           icon={<UserOutlined />}
           style={{ border: '2px solid #e0e0e0', flexShrink: 0 }}
@@ -153,10 +170,10 @@ function TweetCard({
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
             <Text strong style={{ fontSize: 16 }}>{tweet.author_display_name}</Text>
             {tweet.author_is_blue_verified && (
-              <span style={{ 
-                display: 'inline-flex', 
+              <span style={{
+                display: 'inline-flex',
                 alignItems: 'center',
-                background: '#1d9bf0', 
+                background: '#1d9bf0',
                 color: 'white',
                 borderRadius: '50%',
                 width: 16,
@@ -191,28 +208,28 @@ function TweetCard({
 
       {/* 媒体 */}
       {tweet.media_urls && tweet.media_urls.length > 0 && (
-        <div style={{ 
-          display: 'grid', 
+        <div style={{
+          display: 'grid',
           gridTemplateColumns: tweet.media_urls.length > 1 ? 'repeat(2, 1fr)' : '1fr',
           gap: 8,
-          marginBottom: 16 
+          marginBottom: 16
         }}
         >
           {tweet.media_urls.map((url, idx) => (
-            <div key={idx} style={{ 
-              borderRadius: 8, 
+            <div key={idx} style={{
+              borderRadius: 8,
               overflow: 'hidden',
               background: '#f0f0f0'
             }}
             >
-              <img 
-                src={url} 
-                alt="" 
-                style={{ 
-                  width: '100%', 
+              <img
+                src={url}
+                alt=""
+                style={{
+                  width: '100%',
                   height: tweet.media_urls.length > 1 ? 150 : 200,
                   objectFit: 'cover'
-                }} 
+                }}
               />
             </div>
           ))}
@@ -220,9 +237,9 @@ function TweetCard({
       )}
 
       {/* 互动数据 */}
-      <div style={{ 
-        display: 'flex', 
-        gap: 24, 
+      <div style={{
+        display: 'flex',
+        gap: 24,
         padding: '12px 0',
         borderTop: `1px solid ${token.colorBorderSecondary}`,
         borderBottom: `1px solid ${token.colorBorderSecondary}`
@@ -234,21 +251,21 @@ function TweetCard({
             <Text type="secondary">{formatNumber(tweet.reply_count)}</Text>
           </Space>
         </Tooltip>
-        
+
         <Tooltip title="转发">
           <Space style={{ cursor: 'pointer' }}>
             <RetweetOutlined style={{ color: '#00ba7c' }} />
             <Text type="secondary">{formatNumber(tweet.repost_count)}</Text>
           </Space>
         </Tooltip>
-        
+
         <Tooltip title="点赞">
           <Space style={{ cursor: 'pointer' }}>
             <HeartOutlined style={{ color: '#f91880' }} />
             <Text type="secondary">{formatNumber(tweet.like_count)}</Text>
           </Space>
         </Tooltip>
-        
+
         {tweet.view_count > 0 && (
           <Tooltip title="浏览">
             <Space style={{ cursor: 'pointer' }}>
@@ -257,12 +274,24 @@ function TweetCard({
             </Space>
           </Tooltip>
         )}
-        
-        <a 
-          href={tweet.post_url} 
-          target="_blank" 
-          rel="noreferrer"
+
+        <Button
+          type="primary"
+          size="small"
+          icon={<RobotOutlined />}
           style={{ marginLeft: 'auto' }}
+          onClick={(e) => {
+            e.stopPropagation()
+            handleClickDetail()
+          }}
+        >
+          AI 回复
+        </Button>
+
+        <a
+          href={tweet.post_url}
+          target="_blank"
+          rel="noreferrer"
         >
           <Button type="link" size="small" icon={<LinkOutlined />}>
             在 X 查看
@@ -271,18 +300,18 @@ function TweetCard({
       </div>
 
       {/* 评论区 */}
-      <Collapse 
-        ghost 
+      <Collapse
+        ghost
         style={{ marginTop: 12 }}
         activeKey={isExpanded ? [tweet.platform_post_id] : []}
         onChange={(keys) => handleExpand(Array.isArray(keys) && keys.length > 0)}
       >
-        <Panel 
+        <Panel
           header={
             <Text type="secondary" style={{ fontSize: 13 }}>
               {isExpanded ? '收起评论' : `查看评论 (${tweet.reply_count})`}
             </Text>
-          } 
+          }
           key={tweet.platform_post_id}
           style={{ border: 'none' }}
         >
@@ -293,15 +322,15 @@ function TweetCard({
           ) : comments.length > 0 ? (
             <Space direction="vertical" style={{ width: '100%' }} size="middle">
               {comments.slice(0, 20).map((comment, idx) => (
-                <div key={comment.id || comment.platform_comment_id} style={{ 
-                  padding: 12, 
+                <div key={comment.id || comment.platform_comment_id} style={{
+                  padding: 12,
                   background: token.colorBgLayout,
-                  borderRadius: token.borderRadiusLG 
+                  borderRadius: token.borderRadiusLG
                 }}
                 >
                   <div style={{ display: 'flex', gap: 10, marginBottom: 8 }}>
-                    <Avatar 
-                      src={comment.author_avatar_url} 
+                    <Avatar
+                      src={comment.author_avatar_url}
                       size={32}
                       icon={<UserOutlined />}
                     />
@@ -309,10 +338,10 @@ function TweetCard({
                       <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                         <Text strong style={{ fontSize: 14 }}>{comment.author_display_name}</Text>
                         {comment.author_is_blue_verified && (
-                          <span style={{ 
-                            display: 'inline-flex', 
+                          <span style={{
+                            display: 'inline-flex',
                             alignItems: 'center',
-                            background: '#1d9bf0', 
+                            background: '#1d9bf0',
                             color: 'white',
                             borderRadius: '50%',
                             width: 14,
@@ -354,8 +383,8 @@ function TweetCard({
               )}
             </Space>
           ) : (
-            <Empty 
-              image={Empty.PRESENTED_IMAGE_SIMPLE} 
+            <Empty
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
               description={
                 tweet.reply_count > 0
                   ? '未拉到评论（请确认已设置 TWITTER_USE_BIRD=true，且 bird 可用；服务器需能执行 bird replies）'
@@ -458,8 +487,8 @@ export default function TweetsPanel({ userId: userIdProp }: TweetsPanelProps) {
             <Text type="secondary" style={{ fontSize: 13, display: 'block', marginBottom: 16 }}>
               请先添加监控账号，然后点击刷新获取推文
             </Text>
-            <Button 
-              type="primary" 
+            <Button
+              type="primary"
               icon={<SyncOutlined />}
               onClick={() => refreshMutation.mutate()}
               loading={refreshMutation.isPending}
@@ -481,8 +510,8 @@ export default function TweetsPanel({ userId: userIdProp }: TweetsPanelProps) {
           </Text>
           <Tag color="blue">监控账号动态</Tag>
         </Space>
-        <Button 
-          icon={<SyncOutlined />} 
+        <Button
+          icon={<SyncOutlined />}
           onClick={() => refreshMutation.mutate()}
           loading={refreshMutation.isPending}
         >

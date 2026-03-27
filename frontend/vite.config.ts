@@ -2,10 +2,10 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
-/** 开发 / preview 共用：把 /api 转到 Go 后端（使用 8888 端口） */
+/** 开发 / preview 共用：把 /api 转到 Go 后端（使用 8889 端口） */
 const apiProxy = {
   '/api': {
-    target: 'http://127.0.0.1:8888',
+    target: 'http://127.0.0.1:8889',
     changeOrigin: true,
   },
 } as const

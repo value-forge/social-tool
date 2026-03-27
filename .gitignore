@@ -44,3 +44,7 @@ real_following.json
 real_following_clean.json
 real_tweets.json
 tweets_*.json
+
+# Sensitive
+backend/twitter_cookies.txt
+backend/logs/
