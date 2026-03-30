@@ -18,7 +18,8 @@ type TwitterUser struct {
 	Profile       Profile            `bson:"profile"`
 	Stats         UserStats          `bson:"stats"`
 	RefCount      int                `bson:"refCount"`
-	MonitorStatus string             `bson:"monitorStatus"`
+	MonitorStatus int                `bson:"monitorStatus"` // 1: 正常监控, -1: 不在监控
+	LastFetchedAt *time.Time         `bson:"lastFetchedAt,omitempty"`
 	CT            time.Time          `bson:"ct"`
 	UT            time.Time          `bson:"ut"`
 }
@@ -69,18 +70,27 @@ func (r *TwitterUserRepo) CreateOrUpdate(ctx context.Context, user *TwitterUser)
 	now := time.Now()
 	user.UT = now
 
+	setData := bson.M{
+		"twitterId": user.TwitterID,
+		"username":  user.Username,
+		"profile":   user.Profile,
+		"stats":     user.Stats,
+		"ut":        now,
+	}
+	if user.RefCount != 0 {
+		setData["refCount"] = user.RefCount
+	}
+	if user.MonitorStatus != 0 {
+		setData["monitorStatus"] = user.MonitorStatus
+	}
+	if user.LastFetchedAt != nil {
+		setData["lastFetchedAt"] = *user.LastFetchedAt
+	}
+
 	result, err := r.coll.UpdateOne(ctx,
 		bson.M{"twitterId": user.TwitterID},
 		bson.M{
-			"$set":         bson.M{
-				"twitterId": user.TwitterID,
-				"username": user.Username,
-				"profile": user.Profile,
-				"stats": user.Stats,
-				"refCount": user.RefCount,
-				"monitorStatus": user.MonitorStatus,
-				"ut": now,
-			},
+			"$set":         setData,
 			"$setOnInsert": bson.M{"ct": now},
 		},
 		options.Update().SetUpsert(true),
@@ -101,8 +111,43 @@ func (r *TwitterUserRepo) CreateOrUpdate(ctx context.Context, user *TwitterUser)
 	return &existing.ID, nil
 }
 
+// UpdateRefCount 更新引用计数
+func (r *TwitterUserRepo) UpdateRefCount(ctx context.Context, twitterID string, delta int) error {
+	_, err := r.coll.UpdateOne(ctx,
+		bson.M{"twitterId": twitterID},
+		bson.M{"$inc": bson.M{"refCount": delta}})
+	return err
+}
+
+// UpdateMonitorStatus 更新监控状态
+func (r *TwitterUserRepo) UpdateMonitorStatus(ctx context.Context, twitterID string, status int) error {
+	_, err := r.coll.UpdateOne(ctx,
+		bson.M{"twitterId": twitterID},
+		bson.M{"$set": bson.M{"monitorStatus": status, "ut": time.Now()}})
+	return err
+}
+
+// ListActive 获取所有正在监控的用户
 func (r *TwitterUserRepo) ListActive(ctx context.Context) ([]*TwitterUser, error) {
-	cursor, err := r.coll.Find(ctx, bson.M{"monitorStatus": "active"})
+	cursor, err := r.coll.Find(ctx, bson.M{"monitorStatus": 1})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var users []*TwitterUser
+	if err := cursor.All(ctx, &users); err != nil {
+		return nil, err
+	}
+	return users, nil
+}
+
+// ListByRefCount 根据引用计数和监控状态查询
+func (r *TwitterUserRepo) ListByRefCount(ctx context.Context, minRefCount int) ([]*TwitterUser, error) {
+	cursor, err := r.coll.Find(ctx, bson.M{
+		"refCount":      bson.M{"$gte": minRefCount},
+		"monitorStatus": 1,
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -119,6 +164,8 @@ func (r *TwitterUserRepo) InitIndexes(ctx context.Context) error {
 	_, err := r.coll.Indexes().CreateMany(ctx, []mongo.IndexModel{
 		{Keys: bson.D{{Key: "twitterId", Value: 1}}, Options: options.Index().SetUnique(true)},
 		{Keys: bson.D{{Key: "username", Value: 1}}},
+		{Keys: bson.D{{Key: "refCount", Value: 1}, {Key: "monitorStatus", Value: 1}}},
+		{Keys: bson.D{{Key: "lastFetchedAt", Value: 1}}},
 	})
 	return err
 }

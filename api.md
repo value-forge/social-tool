@@ -8,22 +8,23 @@
 
 | 序号 | 方法 | 路径 | 功能说明 | 对应 Web 界面 |
 |------|------|------|----------|---------------|
+| **认证** |
+| 1 | POST | `/auth/login` | 邮箱登录 | 登录页 |
+| 2 | GET | `/user/me` | 获取当前用户信息 | 侧边栏用户卡片 |
 | **监控账号管理** |
-| 1 | GET | `/monitors` | 获取监控账号列表 | 监控中心 → 我的监控列表 |
-| 2 | POST | `/monitors/add` | 添加监控账号 | 监控中心 → + 添加监控（弹窗） |
-| 3 | DELETE | `/monitors/:id` | 删除监控账号 | 监控中心 → 删除按钮 |
-| 4 | PUT | `/monitors/:id` | 更新监控设置 | 监控中心 → 编辑按钮 |
+| 3 | GET | `/monitors` | 获取监控账号列表 | 监控中心 → 我的监控列表 |
+| 4 | POST | `/monitors/add` | 添加监控账号 | 监控中心 → + 添加监控（弹窗） |
+| 5 | DELETE | `/monitors/:id` | 删除监控账号 | 监控中心 → 删除按钮 |
+| 6 | PUT | `/monitors/:id` | 更新监控设置 | 监控中心 → 编辑按钮 |
 | **推文监控** |
-| 5 | GET | `/tweets/feed` | 获取监控动态 | 监控中心 → 最新动态列表 |
+| 7 | GET | `/tweets/feed` | 获取监控动态 | 监控中心 → 最新动态列表 |
 | **钉钉推送** |
-| 6 | PUT | `/settings/dingtalk` | 更新钉钉配置 | 设置页面 → 钉钉配置 |
+| 8 | PUT | `/settings/dingtalk` | 更新钉钉配置 | 设置页面 → 钉钉配置 |
 | **数据统计** |
-| 7 | GET | `/stats/overview` | 获取监控统计 | 监控中心 → 统计卡片 |
-
+| 9 | GET | `/stats/overview` | 获取监控统计 | 监控中心 → 统计卡片 |
 ---
 
 ## 基础信息
-
 | 项目 | 说明 |
 |------|------|
 | Base URL | `http://localhost:8080/api/v1` |
@@ -74,9 +75,135 @@
 
 ---
 
-## 1. 获取监控账号列表
+## 1. 邮箱登录
 
-获取当前用户监控的所有 Twitter 账号。
+简化登录：只校验邮箱格式，密码固定为 `88888888`。
+
+```
+POST /auth/login
+```
+
+**请求参数（Body）：**
+
+| 字段 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| email | string | 是 | 邮箱地址，需符合邮箱格式 |
+| password | string | 是 | 密码，固定为 `88888888` |
+
+**请求示例：**
+
+```json
+{
+  "email": "peter@example.com",
+  "password": "88888888"
+}
+```
+
+**响应字段：**
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| token | string | JWT Token，后续请求放入 `Authorization: Bearer <token>` |
+| expiresIn | int | Token 有效期（秒），默认 604800（7天） |
+| user | object | 当前用户信息 |
+| user.id | string | 用户ID |
+| user.email | string | 邮箱 |
+| user.name | string | 用户名 |
+
+**响应示例：**
+
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIs...",
+    "expiresIn": 604800,
+    "user": {
+      "id": "69c5fc9fa511c779139c28aa",
+      "email": "peter@example.com",
+      "name": "Peter Lee"
+    }
+  }
+}
+```
+
+**错误场景：**
+
+| code | message | 说明 |
+|------|---------|------|
+| 400 | `invalid email format` | 邮箱格式不正确 |
+| 401 | `invalid password` | 密码不是 88888888 |
+| 404 | `user not found` | 该邮箱未注册（首次登录自动创建用户） |
+
+**特殊逻辑：**
+- 首次登录时，如果邮箱不存在，自动创建用户（`users` 表），name 取邮箱 @ 前缀
+- 密码不入库，仅在接口层校验 `password === "88888888"`
+
+---
+
+## 2. 获取当前用户信息
+
+返回当前登录用户的基本信息，用于侧边栏展示。
+
+> 数据来源：`users`
+
+```
+GET /user/me
+```
+
+**请求头：** `Authorization: Bearer <token>`
+
+**响应字段：**
+
+| 字段 | 类型 | 来源表 | 说明 |
+|------|------|--------|------|
+| id | string | `users._id` | 用户ID |
+| email | string | `users.email` | 邮箱 |
+| name | string | `users.name` | 用户名 |
+| avatar | string | `users.avatar` | 头像URL（可能为空） |
+| twitter | object | `users.twitter` | 绑定的Twitter信息（可能为空） |
+| twitter.username | string | `users.twitter.username` | Twitter用户名 |
+| settings | object | `users.settings` | 设置 |
+| settings.dingtalkWebhook | string | — | 钉钉Webhook（脱敏） |
+| notifications | object | `users.notifications` | 通知配置 |
+| notifications.dingtalk | boolean | — | 钉钉通知开关 |
+
+**响应示例：**
+
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": {
+    "id": "69c5fc9fa511c779139c28aa",
+    "email": "peter@example.com",
+    "name": "Peter Lee",
+    "avatar": "",
+    "twitter": {
+      "username": "0xpeterlee"
+    },
+    "settings": {
+      "dingtalkWebhook": "https://oapi.dingtalk.com/robot/send?access_token=3aa3...4abc"
+    },
+    "notifications": {
+      "dingtalk": true
+    }
+  }
+}
+```
+
+**错误场景：**
+
+| code | message | 说明 |
+|------|---------|------|
+| 401 | `unauthorized` | Token 无效或过期 |
+
+---
+
+## 3. 获取监控账号列表
+
+获取当前用户监控的所有 Twitter 账号（需登录）。
 
 > 数据来源：`user_monitored_accounts` JOIN `twitter_users`
 
@@ -119,7 +246,7 @@ GET /monitors
 | list[].stats.followingCount | int | `twitter_users.stats.followingCount` | 关注数 |
 | list[].stats.tweetsCount | int | `twitter_users.stats.tweetsCount` | 推文总数 |
 | list[].stats.updatedAt | string | `twitter_users.stats.updatedAt` | 统计更新时间 |
-| list[].monitorStatus | string | `twitter_users.monitorStatus` | 全局监控状态：`active` / `orphaned` |
+| list[].monitorStatus | int | `twitter_users.monitorStatus` | 全局监控状态：`1`=监控中，`-1`=不在监控 |
 | list[].lastFetchedAt | string | `twitter_users.lastFetchedAt` | 最后抓取时间 |
 
 **响应示例：**
@@ -155,7 +282,7 @@ GET /monitors
           "tweetsCount": 8500,
           "updatedAt": "2026-03-27T16:39:52+08:00"
         },
-        "monitorStatus": "active",
+        "monitorStatus": 1,
         "lastFetchedAt": "2026-03-27T16:39:48+08:00"
       },
       {
@@ -180,7 +307,7 @@ GET /monitors
           "tweetsCount": 20809,
           "updatedAt": "2026-03-27T16:39:52+08:00"
         },
-        "monitorStatus": "active",
+        "monitorStatus": 1,
         "lastFetchedAt": "2026-03-27T16:39:52+08:00"
       }
     ]
@@ -190,7 +317,7 @@ GET /monitors
 
 ---
 
-## 2. 添加监控账号
+## 4. 添加监控账号
 
 添加 Twitter 账号到当前用户的监控列表。
 
@@ -274,11 +401,11 @@ POST /monitors/add
 
 ---
 
-## 3. 删除监控账号
+## 5. 删除监控账号
 
 从当前用户的监控列表中移除一个账号。
 
-> 写入表：删除 `user_monitored_accounts` 记录 + `twitter_users.refCount--`（refCount 降为 0 时标记 `monitorStatus: "orphaned"`）
+> 写入表：删除 `user_monitored_accounts` 记录 + `twitter_users.refCount--`（refCount 降为 0 时标记 `monitorStatus: -1`）
 
 ```
 DELETE /monitors/:id
@@ -308,7 +435,7 @@ DELETE /monitors/:id
 
 ---
 
-## 4. 更新监控设置
+## 6. 更新监控设置
 
 更新监控关系的配置（状态、备注）。
 
@@ -373,7 +500,7 @@ PUT /monitors/:id
 
 ---
 
-## 5. 获取监控动态（推文Feed）
+## 7. 获取监控动态（推文Feed）
 
 获取当前用户所有监控账号的推文动态列表。
 
@@ -390,7 +517,7 @@ GET /tweets/feed
 | page | int | 否 | 页码，默认 1 |
 | limit | int | 否 | 每页数量，默认 20 |
 | twitterUserId | string | 否 | 筛选特定 Twitter 用户，对应 `tweets.twitterUserId` |
-| aiStatus | string | 否 | 筛选 AI 状态：`pending` / `analyzing` / `completed` / `failed` |
+| aiStatus | int | 否 | 筛选 AI 状态：`-1`=待分析，`1`=已完成，`-2`=分析失败 |
 | type | string | 否 | 筛选推文类型：`original` / `reply` / `retweet` / `quote` |
 | startDate | string | 否 | 起始日期，格式 `2026-03-27` |
 | endDate | string | 否 | 结束日期，格式 `2026-03-27` |
@@ -420,9 +547,9 @@ GET /tweets/feed
 | list[].metrics.viewCount | int | `tweets.metrics.viewCount` | 浏览数 |
 | list[].publishedAt | string | `tweets.publishedAt` | 发布时间（北京时间） |
 | list[].fetchedAt | string | `tweets.fetchedAt` | 抓取时间 |
-| list[].aiStatus | string | `tweets.aiStatus` | AI状态：`pending` / `analyzing` / `completed` / `failed` |
+| list[].aiStatus | int | `tweets.aiStatus` | AI状态：`-1`=待分析，`1`=已完成，`-2`=分析失败 |
 | list[].aiAnalyzedAt | string/null | `tweets.aiAnalyzedAt` | AI 分析完成时间 |
-| list[].aiSuggestions | object/null | `tweets.aiSuggestions` | AI 分析结果（aiStatus=completed 时有值） |
+| list[].aiSuggestions | object/null | `tweets.aiSuggestions` | AI 分析结果（aiStatus=1 时有值） |
 | list[].aiSuggestions.score | float | `tweets.aiSuggestions.score` | 评分（1-10） |
 | list[].aiSuggestions.summary | string | `tweets.aiSuggestions.summary` | 内容摘要 |
 | list[].aiSuggestions.suggestion | object | `tweets.aiSuggestions.suggestion` | 评论建议 |
@@ -465,7 +592,7 @@ GET /tweets/feed
         },
         "publishedAt": "2026-03-27T19:52:13+08:00",
         "fetchedAt": "2026-03-27T16:34:29+08:00",
-        "aiStatus": "completed",
+        "aiStatus": 1,
         "aiAnalyzedAt": "2026-03-27T16:34:47+08:00",
         "aiSuggestions": {
           "score": 7.5,
@@ -509,7 +636,7 @@ GET /tweets/feed
         },
         "publishedAt": "2026-03-27T16:30:00+08:00",
         "fetchedAt": "2026-03-27T16:39:48+08:00",
-        "aiStatus": "completed",
+        "aiStatus": 1,
         "aiAnalyzedAt": "2026-03-27T16:40:11+08:00",
         "aiSuggestions": {
           "score": 7.5,
@@ -538,7 +665,7 @@ GET /tweets/feed
 
 ---
 
-## 6. 更新钉钉配置
+## 8. 更新钉钉配置
 
 更新当前用户的钉钉推送设置。
 
@@ -600,7 +727,7 @@ PUT /settings/dingtalk
 
 ---
 
-## 7. 获取监控统计
+## 9. 获取监控统计
 
 获取当前用户的监控总览统计数据。
 
@@ -623,11 +750,11 @@ GET /stats/overview
 | tweets | object | 推文统计 | — |
 | tweets.total | int | 推文总数 | `count(tweets where twitterUserId in 当前用户监控列表)` |
 | tweets.today | int | 今日新推文 | `count(... where publishedAt >= 今日零点)` |
-| tweets.pending | int | 待处理数量 | `count(... where aiStatus="pending")` |
-| tweets.completed | int | 已分析数量 | `count(... where aiStatus="completed")` |
-| tweets.failed | int | 分析失败数量 | `count(... where aiStatus="failed")` |
+| tweets.pending | int | 待分析数量 | `count(... where aiStatus=-1)` |
+| tweets.completed | int | 已分析数量 | `count(... where aiStatus=1)` |
+| tweets.failed | int | 分析失败数量 | `count(... where aiStatus=-2)` |
 | ai | object | AI 分析统计 | — |
-| ai.avgScore | float | 平均评分 | `avg(tweets.aiSuggestions.score where aiStatus="completed")` |
+| ai.avgScore | float | 平均评分 | `avg(tweets.aiSuggestions.score where aiStatus=1)` |
 | ai.highScoreCount | int | 高分推文数（≥7分） | `count(... where aiSuggestions.score >= 7)` |
 | dingtalk | object | 钉钉推送统计 | — |
 | dingtalk.todaySent | int | 今日推送数 | 今日成功推送到钉钉的推文数量 |
@@ -689,10 +816,9 @@ GET /stats/overview
 
 | 值 | 说明 |
 |------|------|
-| pending | 待分析 |
-| analyzing | 分析中 |
-| completed | 已完成 |
-| failed | 分析失败 |
+| -1 | 待分析 |
+| 1 | 已完成 |
+| -2 | 分析失败 |
 
 ### user_monitored_accounts.status 枚举
 
@@ -705,8 +831,8 @@ GET /stats/overview
 
 | 值 | 说明 |
 |------|------|
-| active | 有用户在监控 |
-| orphaned | 无用户监控（refCount=0） |
+| 1 | 有用户在监控 |
+| -1 | 无用户监控（refCount=0） |
 
 ### 时间格式
 

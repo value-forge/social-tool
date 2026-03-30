@@ -1,16 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  --bg-primary: #0a0a0a;
-  --bg-sidebar: #111111;
-  --bg-card: #1a1a1a;
-  --border: #2a2a2a;
-  --accent-blue: #1d9bf0;
-  --accent-amber: #f59e0b;
+  --bg: #0a0a0a;
+  --bg-elevated: #111111;
+  --bg-hover: #1a1a1a;
+  --border: #222222;
+  --border-hover: #333333;
+  --text: #ffffff;
+  --text-secondary: #888888;
+  --text-tertiary: #555555;
+  --accent: #ffffff;
   --success: #22c55e;
+  --warning: #f59e0b;
   --danger: #ef4444;
-  --text-primary: #e7e9ea;
-  --text-secondary: #71767b;
 }
 
 * {
@@ -19,42 +21,243 @@
   box-sizing: border-box;
 }
 
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Firefox 滚动条 */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+}
+
 body {
-  font-family:
-    'Inter',
-    'Noto Sans SC',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    sans-serif;
-  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro', 'Noto Sans SC', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-html[data-theme='light'] body {
-  background-color: #f5f5f5;
-  color: rgba(0, 0, 0, 0.88);
 }
 
 #root {
   min-height: 100vh;
 }
 
-/* Ant Design Sider：内部容器撑满视口高度，底部用户区贴底 */
-.dashboard-sider .ant-layout-sider-children {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
+/* ========== 三栏网格布局 ========== */
+.app-grid {
+  display: grid;
+  grid-template-columns: 240px 1fr 320px;
+  height: 100vh;
+  overflow: hidden;
 }
 
-/* 避免全局样式或层叠上下文导致菜单项无法点击 */
-.dashboard-sider .ant-menu,
-.dashboard-sider .ant-menu-item,
-.dashboard-sider .ant-menu-submenu-title {
-  pointer-events: auto;
+@media (max-width: 1200px) {
+  .app-grid {
+    grid-template-columns: 240px 1fr;
+  }
+  .app-grid > .app-rightbar {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-grid {
+    grid-template-columns: 1fr;
+  }
+  .app-grid > .app-sidebar {
+    display: none;
+  }
+}
+
+/* ========== 原型表单样式 ========== */
+.proto-label {
+  display: block;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.proto-input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+  font-family: inherit;
+}
+
+.proto-input:focus {
+  border-color: var(--text);
+}
+
+.proto-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.proto-input[readonly] {
+  opacity: 0.92;
+  cursor: default;
+}
+
+textarea.proto-input {
+  min-height: 100px;
+  resize: vertical;
+  line-height: 1.5;
+  font-family: inherit;
+}
+
+.proto-select {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: var(--text);
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  font-family: inherit;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+
+.proto-select:focus {
+  border-color: var(--text);
+}
+
+.proto-hint {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-top: 6px;
+}
+
+/* ========== 原型按钮 ========== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: none;
+  font-family: inherit;
+}
+
+.btn-white {
+  background: var(--text);
+  color: var(--bg);
+}
+
+.btn-white:hover {
+  background: #e0e0e0;
+}
+
+.btn-white:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn-outline:hover {
+  border-color: var(--text);
+}
+
+.btn-outline:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-sm {
+  padding: 8px 16px;
+  font-size: 13px;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid transparent;
+}
+
+.btn-ghost:hover {
+  color: var(--text);
+  background: var(--bg-hover);
+}
+
+/* ========== 原型 Modal 覆盖 antd 样式 ========== */
+.proto-modal .ant-modal-content {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 16px !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+
+.proto-modal .ant-modal-header {
+  background: transparent !important;
+  border-bottom: 1px solid var(--border) !important;
+  padding: 20px 24px !important;
+  margin: 0 !important;
+}
+
+.proto-modal .ant-modal-title {
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  color: var(--text) !important;
+}
+
+.proto-modal .ant-modal-close {
+  top: 20px !important;
+  right: 24px !important;
+  color: var(--text-secondary) !important;
+}
+
+.proto-modal .ant-modal-close:hover {
+  color: var(--text) !important;
+  background: var(--bg-hover) !important;
+}
+
+.proto-modal .ant-modal-body {
+  padding: 24px !important;
+}
+
+.proto-modal .ant-modal-footer {
+  border-top: none !important;
+  padding: 16px 24px 24px !important;
+  margin: 0 !important;
 }

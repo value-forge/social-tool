@@ -48,3 +48,6 @@ tweets_*.json
 # Sensitive
 backend/twitter_cookies.txt
 backend/logs/
+
+# Local data
+data/

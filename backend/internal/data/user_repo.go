@@ -41,8 +41,14 @@ func (r *UserRepo) Create(ctx context.Context, user *User) error {
 	now := time.Now()
 	user.CT = now
 	user.UT = now
-	_, err := r.coll.InsertOne(ctx, user)
-	return err
+	result, err := r.coll.InsertOne(ctx, user)
+	if err != nil {
+		return err
+	}
+	if oid, ok := result.InsertedID.(primitive.ObjectID); ok {
+		user.ID = oid
+	}
+	return nil
 }
 
 func (r *UserRepo) GetFirstUser(ctx context.Context) (*User, error) {

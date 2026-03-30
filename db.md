@@ -68,7 +68,7 @@ db.users.createIndex({ "twitter.userId": 1 }, { sparse: true })
 
 ```javascript
 {
-  _id: "295218901", // Twitter 数字ID，唯一
+  _id: "295218901",              // Twitter 数字ID，唯一
   username: "VitalikButerin",    // 当前用户名
   
   profile: {
@@ -88,10 +88,9 @@ db.users.createIndex({ "twitter.userId": 1 }, { sparse: true })
   },
   
   refCount: 5,                   // 引用计数：多少个用户在监控
-  monitorStatus: "active",       // active, orphaned
+  monitorStatus: 1,              // 1: 正常监控, -1:不在监控
   
   lastFetchedAt: ISODate("2026-03-25T14:30:00Z"),
-  fetchInterval: 60*5,           // 轮询
   
   ct: ISODate("2026-01-01T00:00:00Z"),
   ut: ISODate("2026-03-25T14:30:00Z")
@@ -131,9 +130,7 @@ db.user_monitored_accounts.createIndex({ twitterUserId: 1 })
 ```
 
 ---
-
 ## 4. tweets - 推文表
-
 全局推文 + AI分类总结。
 
 ```javascript
@@ -165,9 +162,8 @@ db.user_monitored_accounts.createIndex({ twitterUserId: 1 })
   fetchedAt: ISODate("2026-03-25T06:23:45Z"),
   
   // ========== AI 分类和总结 ==========
-  aiStatus: "pending",           // pending | analyzing | completed | failed
-  aiAnalyzedAt: null,            // AI 分析完成时间
-  
+  aiStatus: -1,             // -2：ai分析失败 -1：未完成ai分析 1:完成ai分析
+  aiAnalyzedAt: ISODate("2026-03-25T06:23:45Z"),       // AI 分析完成时间
   aiSuggestions: {
     "score": 7.0,
     "summary": "主张生命在于静止而非运动，提出运动时间成本悖论（运动2小时换寿命2小时不划算），推崇躺平玩手机、水疗按摩的生活方式",
@@ -192,4 +188,3 @@ db.tweets.createIndex({ isFrontRowOpportunity: 1, publishedAt: -1 })
 db.tweets.createIndex({ topics: 1, publishedAt: -1 })
 db.tweets.createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 })
 ```
-

@@ -39,7 +39,7 @@ func fetchAndCreateTwitterUser(
 			Username:      username,
 			Profile:       data.Profile{DisplayName: username},
 			RefCount:      1,
-			MonitorStatus: "active",
+			MonitorStatus: 1, // 1: 正常监控
 		}
 		id, err := twitterRepo.CreateOrUpdate(ctx, user)
 		if err != nil {
@@ -67,7 +67,7 @@ func fetchAndCreateTwitterUser(
 			UpdatedAt:      time.Now(),
 		},
 		RefCount:      1,
-		MonitorStatus: "active",
+		MonitorStatus: 1, // 1: 正常监控
 	}
 
 	id, err := twitterRepo.CreateOrUpdate(ctx, user)

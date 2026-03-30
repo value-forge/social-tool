@@ -5,6 +5,7 @@ import './index.css'
 import App from './App'
 import { ErrorBoundary } from './components/common/ErrorBoundary'
 import { AppThemeProvider } from './theme/ThemeProvider'
+import { AuthProvider } from './hooks/useAuth'
 import { queryClient } from './lib/queryClient'
 
 createRoot(document.getElementById('root')!).render(
@@ -12,7 +13,9 @@ createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
       <AppThemeProvider>
         <ErrorBoundary>
-          <App />
+          <AuthProvider>
+            <App />
+          </AuthProvider>
         </ErrorBoundary>
       </AppThemeProvider>
     </QueryClientProvider>

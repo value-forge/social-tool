@@ -59,12 +59,96 @@
       line-height: 1.5;
     }
     
-    /* 全屏布局 */
+    /* 登录（未认证时全屏；认证后隐藏） */
+    .login-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: var(--bg);
+      background-image:
+        radial-gradient(ellipse 90% 60% at 50% -30%, rgba(255, 255, 255, 0.07), transparent),
+        radial-gradient(ellipse 70% 50% at 100% 80%, rgba(255, 255, 255, 0.04), transparent);
+    }
+    
+    body.is-authenticated .login-screen {
+      display: none;
+    }
+    
+    .login-panel {
+      width: 100%;
+      max-width: 400px;
+      padding: 40px 36px 36px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+    }
+    
+    .login-logo {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+    
+    .login-tagline {
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 28px;
+    }
+    
+    .login-form .form-group {
+      margin-bottom: 18px;
+    }
+    
+    .login-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .login-link {
+      font-size: 13px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    
+    .login-link:hover {
+      color: var(--text);
+    }
+    
+    .login-submit {
+      width: 100%;
+      justify-content: center;
+    }
+    
+    .login-hint {
+      margin-top: 20px;
+      font-size: 12px;
+      color: var(--text-tertiary);
+      text-align: center;
+      line-height: 1.5;
+    }
+    
+    /* 全屏布局（登录成功后显示） */
     .app {
-      display: grid;
+      display: none;
       grid-template-columns: 240px 1fr;
       height: 100vh;
       overflow: hidden;
+    }
+    
+    body.is-authenticated .app {
+      display: grid;
     }
     
     /* 左侧导航 */
@@ -141,6 +225,24 @@
     .nav-footer {
       margin-top: auto;
       padding: 16px;
+    }
+    
+    .btn-logout {
+      width: 100%;
+      margin-top: 4px;
+      padding: 10px 12px;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--text-tertiary);
+      font-size: 12px;
+      cursor: pointer;
+      transition: color 0.15s, background 0.15s;
+    }
+    
+    .btn-logout:hover {
+      color: var(--text-secondary);
+      background: var(--bg-hover);
     }
     
     .user-card {
@@ -1083,6 +1185,13 @@
       color: var(--text-tertiary);
     }
     
+    textarea.form-input {
+      min-height: 100px;
+      resize: vertical;
+      line-height: 1.5;
+      font-family: inherit;
+    }
+    
     .form-hint {
       font-size: 12px;
       color: var(--text-tertiary);
@@ -1193,16 +1302,30 @@
       display: block;
     }
     
+    /* 我的监控列表（线框：头像 / 昵称+@用户名+粉丝·关注 / 简介 / 查看；对齐 GET /monitors 字段） */
+    .monitor-pages {
+      min-height: 1px;
+    }
+    
+    .monitor-page {
+      display: none;
+    }
+    
+    .monitor-page.is-active {
+      display: block;
+    }
+    
     .monitor-item {
       display: flex;
-      align-items: center;
-      gap: 16px;
+      align-items: flex-start;
+      gap: 14px;
       padding: 16px 24px;
       border-bottom: 1px solid var(--border);
       transition: background 0.1s;
+      cursor: pointer;
     }
     
-    .monitor-item:last-child {
+    .monitor-page .monitor-item:last-child {
       border-bottom: none;
     }
     
@@ -1211,8 +1334,8 @@
     }
     
     .monitor-avatar {
-      width: 44px;
-      height: 44px;
+      width: 48px;
+      height: 48px;
       border-radius: 50%;
       background: linear-gradient(135deg, #333, #555);
       display: flex;
@@ -1223,60 +1346,173 @@
       flex-shrink: 0;
     }
     
-    .monitor-info {
+    .monitor-body {
       flex: 1;
       min-width: 0;
     }
     
-    .monitor-header {
+    .monitor-top {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
-      gap: 8px;
-      margin-bottom: 4px;
+      gap: 6px 12px;
+      row-gap: 4px;
     }
     
     .monitor-name {
       font-weight: 600;
-    }
-    
-    .monitor-handle {
-      color: var(--text-secondary);
-      font-size: 13px;
-    }
-    
-    .monitor-meta {
-      display: flex;
+      font-size: 14px;
+      display: inline-flex;
       align-items: center;
-      gap: 12px;
+      gap: 4px;
+    }
+    
+    .monitor-verified {
+      display: inline-flex;
+      color: #38bdf8;
+      flex-shrink: 0;
+    }
+    
+    .monitor-verified svg {
+      width: 15px;
+      height: 15px;
+    }
+    
+    .monitor-user {
       font-size: 13px;
       color: var(--text-secondary);
     }
     
-    .monitor-stats {
-      display: flex;
-      gap: 24px;
-      text-align: center;
+    .monitor-user::before {
+      content: "@";
     }
     
-    .monitor-stat {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
+    .monitor-metrics {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px 18px;
+      margin-left: auto;
+      flex-wrap: wrap;
     }
     
-    .monitor-stat-value {
-      font-size: 18px;
-      font-weight: 600;
+    .monitor-metric {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-variant-numeric: tabular-nums;
     }
     
-    .monitor-stat-label {
+    .monitor-metric svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      opacity: 0.8;
+      flex-shrink: 0;
+    }
+    
+    .monitor-metric svg circle,
+    .monitor-metric svg path,
+    .monitor-metric svg line,
+    .monitor-metric svg polyline {
+      fill: none;
+      stroke: currentColor;
+    }
+    
+    .monitor-status {
       font-size: 11px;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
       color: var(--text-tertiary);
     }
     
-    .monitor-actions {
+    .monitor-status--on {
+      border-color: rgba(34, 197, 94, 0.35);
+      color: var(--success);
+    }
+    
+    .monitor-status--off {
+      border-color: rgba(245, 158, 11, 0.35);
+      color: var(--warning);
+    }
+    
+    .monitor-bio {
+      margin-top: 6px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.45;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+    
+    .monitor-notes-line {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      margin-top: 6px;
+      line-height: 1.4;
+      display: none;
+    }
+    
+    .monitor-notes-line.has-notes {
+      display: block;
+    }
+    
+    .monitor-notes-label {
+      color: var(--text-tertiary);
+    }
+    
+    .monitor-notes-text {
+      color: var(--text-secondary);
+    }
+    
+    .form-input[readonly],
+    textarea.form-input[readonly] {
+      opacity: 0.92;
+      cursor: default;
+    }
+    
+    .detail-readonly {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      padding: 10px 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      min-height: 40px;
+    }
+    
+    .detail-kv {
       display: flex;
-      gap: 8px;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    
+    .detail-kv span {
+      font-variant-numeric: tabular-nums;
+    }
+    
+    .monitor-actions {
+      flex-shrink: 0;
+      margin-left: 4px;
+      align-self: center;
+    }
+    
+    @media (max-width: 720px) {
+      .monitor-metrics {
+        margin-left: 0;
+        width: 100%;
+      }
     }
     
     /* 响应式 */
@@ -1309,6 +1545,34 @@
   </style>
 </head>
 <body>
+  <div class="login-screen" id="loginScreen" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+    <div class="login-panel">
+      <div class="login-brand">
+        <h1 class="login-logo" id="loginTitle">Social Tool</h1>
+        <p class="login-tagline">登录以监控大V动态、管理互动与增长数据</p>
+      </div>
+      <form class="login-form" id="loginForm" onsubmit="submitLogin(event)">
+        <div class="form-group">
+          <label class="form-label" for="loginEmail">邮箱或用户名</label>
+          <input type="text" id="loginEmail" class="form-input" placeholder="hello@example.com" autocomplete="username" required autofocus>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="loginPassword">密码</label>
+          <input type="password" id="loginPassword" class="form-input" placeholder="输入密码" autocomplete="current-password" required>
+        </div>
+        <div class="login-row">
+          <label class="form-checkbox">
+            <input type="checkbox" id="loginRemember">
+            <span>记住登录</span>
+          </label>
+          <a href="#" class="login-link" onclick="event.preventDefault()">忘记密码？</a>
+        </div>
+        <button type="submit" class="btn btn-white login-submit">登录</button>
+      </form>
+      <p class="login-hint">原型演示：填写任意邮箱与密码即可进入</p>
+    </div>
+  </div>
+  
   <div class="app">
     <!-- 侧边栏 -->
     <aside class="sidebar">
@@ -1387,6 +1651,7 @@
             <div class="user-handle">@0xpeterlee</div>
           </div>
         </div>
+        <button type="button" class="btn-logout" onclick="logout()">退出登录</button>
       </div>
     </aside>
     
@@ -1691,150 +1956,209 @@
               </div>
             </div>
             
-            <!-- 我的监控列表 Tab -->
+            <!-- 我的监控列表 Tab：对齐 GET /monitors — profile.displayName、username、profile.bio、stats.followersCount / followingCount -->
             <div class="tab-content" id="tab-monitors">
-              <div class="monitor-item">
+              <div class="monitor-pages">
+              <div class="monitor-page is-active" data-monitor-page="1">
+              <div class="monitor-item"
+                data-monitor-id="680a1b2c3d4e5f6789abcdef"
+                data-twitter-user-id="tw_0xdayu_001"
+                data-username="0xdayu"
+                data-display-name="大宇"
+                data-bio="大V KOL 程序员"
+                data-followers="11"
+                data-following="11"
+                data-notes="核心观察名单"
+                data-status="1"
+                data-verified="false"
+                onclick="openMonitorDetailModal(this)">
+                <div class="monitor-avatar" style="background: linear-gradient(135deg, #3d3d4a, #5c5c6e);">大</div>
+                <div class="monitor-body">
+                  <div class="monitor-top">
+                    <span class="monitor-name">大宇</span>
+                    <span class="monitor-user">0xdayu</span>
+                    <span class="monitor-status monitor-status--on">监控中</span>
+                    <div class="monitor-metrics" aria-label="社交数据">
+                      <span class="monitor-metric" title="粉丝数 · stats.followersCount">
+                        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        11
+                      </span>
+                      <span class="monitor-metric" title="关注数 · stats.followingCount">
+                        <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                        11
+                      </span>
+                    </div>
+                  </div>
+                  <p class="monitor-bio">大V KOL 程序员</p>
+                  <p class="monitor-notes-line has-notes"><span class="monitor-notes-label">备注：</span><span class="monitor-notes-text">核心观察名单</span></p>
+                </div>
+                <div class="monitor-actions" onclick="event.stopPropagation()">
+                  <button type="button" class="btn btn-outline btn-sm" onclick="openMonitorDetailModal(this.closest('.monitor-item'))">查看</button>
+                </div>
+              </div>
+              
+              <div class="monitor-item"
+                data-monitor-id="680a1b2c3d4e5f6789abcd01"
+                data-twitter-user-id="tw_vitalik_002"
+                data-username="VitalikButerin"
+                data-display-name="Vitalik.eth"
+                data-bio="Ethereum 联合创始人。关注以太坊、密码学与开源。"
+                data-followers="5100000"
+                data-following="1200"
+                data-notes=""
+                data-status="1"
+                data-verified="true"
+                onclick="openMonitorDetailModal(this)">
                 <div class="monitor-avatar">V</div>
-                <div class="monitor-info">
-                  <div class="monitor-header">
-                    <span class="monitor-name">Vitalik.eth</span>
-                    <span class="monitor-handle">@VitalikButerin</span>
+                <div class="monitor-body">
+                  <div class="monitor-top">
+                    <span class="monitor-name">Vitalik.eth<span class="monitor-verified" title="已认证 · profile.verified" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span></span>
+                    <span class="monitor-user">VitalikButerin</span>
+                    <span class="monitor-status monitor-status--on">监控中</span>
+                    <div class="monitor-metrics" aria-label="社交数据">
+                      <span class="monitor-metric" title="粉丝">
+                        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        5.1M
+                      </span>
+                      <span class="monitor-metric" title="关注">
+                        <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                        1.2k
+                      </span>
+                    </div>
                   </div>
-                  <div class="monitor-meta">
-                    <span>大V / KOL</span>
-                    <span>·</span>
-                    <span>Web3 · 技术</span>
-                  </div>
+                  <p class="monitor-bio">Ethereum 联合创始人。关注以太坊、密码学与开源。</p>
+                  <p class="monitor-notes-line"><span class="monitor-notes-label">备注：</span><span class="monitor-notes-text"></span></p>
                 </div>
-                <div class="monitor-stats">
-                  <div class="monitor-stat">
-                    <span class="monitor-stat-value">156</span>
-                    <span class="monitor-stat-label">今日推文</span>
-                  </div>
-                  <div class="monitor-stat">
-                    <span class="monitor-stat-value">3</span>
-                    <span class="monitor-stat-label">待处理</span>
-                  </div>
-                </div>
-                <div class="monitor-actions">
-                  <button class="btn btn-outline btn-sm">编辑</button>
-                  <button class="btn btn-ghost btn-sm" style="color: var(--danger);">删除</button>
+                <div class="monitor-actions" onclick="event.stopPropagation()">
+                  <button type="button" class="btn btn-outline btn-sm" onclick="openMonitorDetailModal(this.closest('.monitor-item'))">查看</button>
                 </div>
               </div>
               
-              <div class="monitor-item">
-                <div class="monitor-avatar" style="background: linear-gradient(135deg, #444, #666);">C</div>
-                <div class="monitor-info">
-                  <div class="monitor-header">
-                    <span class="monitor-name">CZ 🔶 BNB</span>
-                    <span class="monitor-handle">@cz_binance</span>
+              <div class="monitor-item"
+                data-monitor-id="680a1b2c3d4e5f6789abcd02"
+                data-twitter-user-id="tw_cz_003"
+                data-username="cz_binance"
+                data-display-name="CZ 🔶 BNB"
+                data-bio="币安创始人。专注加密资产与全球合规。"
+                data-followers="9800000"
+                data-following="856"
+                data-notes="交易所风向 / 公告"
+                data-status="1"
+                data-verified="true"
+                onclick="openMonitorDetailModal(this)">
+                <div class="monitor-avatar" style="background: linear-gradient(135deg, #4a3520, #6b4e2e);">C</div>
+                <div class="monitor-body">
+                  <div class="monitor-top">
+                    <span class="monitor-name">CZ 🔶 BNB<span class="monitor-verified" title="已认证" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span></span>
+                    <span class="monitor-user">cz_binance</span>
+                    <span class="monitor-status monitor-status--on">监控中</span>
+                    <div class="monitor-metrics" aria-label="社交数据">
+                      <span class="monitor-metric" title="粉丝">
+                        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        9.8M
+                      </span>
+                      <span class="monitor-metric" title="关注">
+                        <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                        856
+                      </span>
+                    </div>
                   </div>
-                  <div class="monitor-meta">
-                    <span>大V / KOL</span>
-                    <span>·</span>
-                    <span>交易所 · 创业</span>
-                  </div>
+                  <p class="monitor-bio">币安创始人。专注加密资产与全球合规。</p>
+                  <p class="monitor-notes-line has-notes"><span class="monitor-notes-label">备注：</span><span class="monitor-notes-text">交易所风向 / 公告</span></p>
                 </div>
-                <div class="monitor-stats">
-                  <div class="monitor-stat">
-                    <span class="monitor-stat-value">89</span>
-                    <span class="monitor-stat-label">今日推文</span>
-                  </div>
-                  <div class="monitor-stat">
-                    <span class="monitor-stat-value">1</span>
-                    <span class="monitor-stat-label">待处理</span>
-                  </div>
-                </div>
-                <div class="monitor-actions">
-                  <button class="btn btn-outline btn-sm">编辑</button>
-                  <button class="btn btn-ghost btn-sm" style="color: var(--danger);">删除</button>
-                </div>
-              </div>
-              
-              <div class="monitor-item">
-                <div class="monitor-avatar" style="background: linear-gradient(135deg, #555, #777);">A</div>
-                <div class="monitor-info">
-                  <div class="monitor-header">
-                    <span class="monitor-name">Andrew Kang</span>
-                    <span class="monitor-handle">@Rewkang</span>
-                  </div>
-                  <div class="monitor-meta">
-                    <span>合作伙伴</span>
-                    <span>·</span>
-                    <span>DeFi · 投资</span>
-                  </div>
-                </div>
-                <div class="monitor-stats">
-                  <div class="monitor-stat">
-                    <span class="monitor-stat-value">42</span>
-                    <span class="monitor-stat-label">今日推文</span>
-                  </div>
-                  <div class="monitor-stat">
-                    <span class="monitor-stat-value">0</span>
-                    <span class="monitor-stat-label">待处理</span>
-                  </div>
-                </div>
-                <div class="monitor-actions">
-                  <button class="btn btn-outline btn-sm">编辑</button>
-                  <button class="btn btn-ghost btn-sm" style="color: var(--danger);">删除</button>
+                <div class="monitor-actions" onclick="event.stopPropagation()">
+                  <button type="button" class="btn btn-outline btn-sm" onclick="openMonitorDetailModal(this.closest('.monitor-item'))">查看</button>
                 </div>
               </div>
+              </div>
               
-              <div class="monitor-item">
+              <div class="monitor-page" data-monitor-page="2">
+              <div class="monitor-item"
+                data-monitor-id="680a1b2c3d4e5f6789abcd03"
+                data-twitter-user-id="tw_mask_004"
+                data-username="realMaskNetwork"
+                data-display-name="Mask Network"
+                data-bio="将 Web3 带给亿万人 — 去中心化社交与支付。"
+                data-followers="182000"
+                data-following="412"
+                data-notes="竞品对标"
+                data-status="-1"
+                data-verified="false"
+                onclick="openMonitorDetailModal(this)">
                 <div class="monitor-avatar" style="background: linear-gradient(135deg, #666, #888);">M</div>
-                <div class="monitor-info">
-                  <div class="monitor-header">
+                <div class="monitor-body">
+                  <div class="monitor-top">
                     <span class="monitor-name">Mask Network</span>
-                    <span class="monitor-handle">@realMaskNetwork</span>
+                    <span class="monitor-user">realMaskNetwork</span>
+                    <span class="monitor-status monitor-status--off">已暂停</span>
+                    <div class="monitor-metrics" aria-label="社交数据">
+                      <span class="monitor-metric" title="粉丝">
+                        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        182k
+                      </span>
+                      <span class="monitor-metric" title="关注">
+                        <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                        412
+                      </span>
+                    </div>
                   </div>
-                  <div class="monitor-meta">
-                    <span>竞品账号</span>
-                    <span>·</span>
-                    <span>产品 · Web3</span>
-                  </div>
+                  <p class="monitor-bio">将 Web3 带给亿万人 — 去中心化社交与支付。</p>
+                  <p class="monitor-notes-line has-notes"><span class="monitor-notes-label">备注：</span><span class="monitor-notes-text">竞品对标</span></p>
                 </div>
-                <div class="monitor-stats">
-                  <div class="monitor-stat">
-                    <span class="monitor-stat-value">23</span>
-                    <span class="monitor-stat-label">今日推文</span>
-                  </div>
-                  <div class="monitor-stat">
-                    <span class="monitor-stat-value">5</span>
-                    <span class="monitor-stat-label">待处理</span>
-                  </div>
-                </div>
-                <div class="monitor-actions">
-                  <button class="btn btn-outline btn-sm">编辑</button>
-                  <button class="btn btn-ghost btn-sm" style="color: var(--danger);">删除</button>
+                <div class="monitor-actions" onclick="event.stopPropagation()">
+                  <button type="button" class="btn btn-outline btn-sm" onclick="openMonitorDetailModal(this.closest('.monitor-item'))">查看</button>
                 </div>
               </div>
               
-              <div class="monitor-item">
+              <div class="monitor-item"
+                data-monitor-id="680a1b2c3d4e5f6789abcd04"
+                data-twitter-user-id="tw_degen_005"
+                data-username="DegenSpartan"
+                data-display-name="DegenSpartan"
+                data-bio="交易员 · 偶尔发梗图，仓位比观点诚实。"
+                data-followers="245000"
+                data-following="1100"
+                data-notes=""
+                data-status="1"
+                data-verified="false"
+                onclick="openMonitorDetailModal(this)">
                 <div class="monitor-avatar" style="background: linear-gradient(135deg, #777, #999);">D</div>
-                <div class="monitor-info">
-                  <div class="monitor-header">
+                <div class="monitor-body">
+                  <div class="monitor-top">
                     <span class="monitor-name">DegenSpartan</span>
-                    <span class="monitor-handle">@DegenSpartan</span>
+                    <span class="monitor-user">DegenSpartan</span>
+                    <span class="monitor-status monitor-status--on">监控中</span>
+                    <div class="monitor-metrics" aria-label="社交数据">
+                      <span class="monitor-metric" title="粉丝">
+                        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        245k
+                      </span>
+                      <span class="monitor-metric" title="关注">
+                        <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                        1.1k
+                      </span>
+                    </div>
                   </div>
-                  <div class="monitor-meta">
-                    <span>社区活跃者</span>
-                    <span>·</span>
-                    <span>交易 · DeFi</span>
-                  </div>
+                  <p class="monitor-bio">交易员 · 偶尔发梗图，仓位比观点诚实。</p>
+                  <p class="monitor-notes-line"><span class="monitor-notes-label">备注：</span><span class="monitor-notes-text"></span></p>
                 </div>
-                <div class="monitor-stats">
-                  <div class="monitor-stat">
-                    <span class="monitor-stat-value">67</span>
-                    <span class="monitor-stat-label">今日推文</span>
-                  </div>
-                  <div class="monitor-stat">
-                    <span class="monitor-stat-value">2</span>
-                    <span class="monitor-stat-label">待处理</span>
-                  </div>
+                <div class="monitor-actions" onclick="event.stopPropagation()">
+                  <button type="button" class="btn btn-outline btn-sm" onclick="openMonitorDetailModal(this.closest('.monitor-item'))">查看</button>
                 </div>
-                <div class="monitor-actions">
-                  <button class="btn btn-outline btn-sm">编辑</button>
-                  <button class="btn btn-ghost btn-sm" style="color: var(--danger);">删除</button>
+              </div>
+              </div>
+              </div>
+              
+              <div class="feed-pagination" role="navigation" aria-label="监控列表分页">
+                <div>
+                  <div class="feed-pagination-info" id="monitorPaginationLabel">第 1 / 2 页</div>
+                  <div class="feed-pagination-meta">每页 3 条 · 示例共 5 条 · 对应 GET /monitors</div>
+                </div>
+                <div class="feed-pagination-controls">
+                  <button type="button" class="btn btn-outline btn-sm" id="monitorPaginationPrev" onclick="goMonitorPrev()" disabled aria-label="上一页">上一页</button>
+                  <button type="button" class="feed-page-num is-active" data-monitor-page-btn="1" onclick="goMonitorPage(1)">1</button>
+                  <button type="button" class="feed-page-num" data-monitor-page-btn="2" onclick="goMonitorPage(2)">2</button>
+                  <button type="button" class="btn btn-outline btn-sm" id="monitorPaginationNext" onclick="goMonitorNext()" aria-label="下一页">下一页</button>
                 </div>
               </div>
             </div>
@@ -2184,71 +2508,120 @@
       </div>
       
       <div class="modal-body">
-        <!-- Twitter Handle -->
         <div class="form-group">
-          <label class="form-label">Twitter 用户名 *</label>
-          <input type="text" class="form-input" placeholder="@username 或 username" id="twitterHandle">
-          <div class="form-hint">输入要监控的 Twitter 账号，不需要包含 @ 符号</div>
+          <label class="form-label" for="twitterHandle">用户名 *</label>
+          <input type="text" class="form-input" id="twitterHandle" placeholder="username" autocomplete="off" maxlength="64">
+          <div class="form-hint">Twitter 用户名，无需 @（对应接口 username）</div>
         </div>
-        
-        <!-- 分组选择 -->
         <div class="form-group">
-          <label class="form-label">选择分组</label>
-          <select class="form-select">
-            <option value="">选择分组...</option>
-            <option value="kol">大V / KOL</option>
-            <option value="competitor">竞品账号</option>
-            <option value="partner">合作伙伴</option>
-            <option value="community">社区活跃者</option>
-            <option value="new">+ 创建新分组</option>
-          </select>
-        </div>
-        
-        <!-- 标签选择 -->
-        <div class="form-group">
-          <label class="form-label">账号标签（多选）</label>
-          <div class="form-tags">
-            <span class="form-tag active" onclick="toggleTag(this)">Web3</span>
-            <span class="form-tag" onclick="toggleTag(this)">DeFi</span>
-            <span class="form-tag" onclick="toggleTag(this)">NFT</span>
-            <span class="form-tag" onclick="toggleTag(this)">投资</span>
-            <span class="form-tag" onclick="toggleTag(this)">技术</span>
-            <span class="form-tag" onclick="toggleTag(this)">创业者</span>
-            <span class="form-tag" onclick="toggleTag(this)">媒体</span>
-          </div>
-        </div>
-        
-        <!-- 关键词过滤 -->
-        <div class="form-group">
-          <label class="form-label">关键词过滤（可选）</label>
-          <input type="text" class="form-input" placeholder="输入关键词，多个用空格分隔">
-          <div class="form-hint">只接收包含这些关键词的推文，留空则接收全部</div>
-        </div>
-        
-        <!-- 通知设置 -->
-        <div class="form-group">
-          <label class="form-checkbox">
-            <input type="checkbox" checked>
-            <span>新推文时钉钉通知</span>
-          </label>
-        </div>
-        
-        <div class="form-group">
-          <label class="form-checkbox">
-            <input type="checkbox" checked>
-            <span>标记"前排机会"（粉丝>10万且5分钟内）</span>
-          </label>
+          <label class="form-label" for="monitorNotes">备注</label>
+          <textarea class="form-input" id="monitorNotes" placeholder="选填，便于区分用途（对应接口 notes）" rows="4"></textarea>
         </div>
       </div>
       
       <div class="modal-footer">
-        <button class="btn btn-outline" onclick="closeModal()">取消</button>
-        <button class="btn btn-white">开始监控</button>
+        <button type="button" class="btn btn-outline" onclick="closeModal()">取消</button>
+        <button type="button" class="btn btn-white">添加监控</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 监控账号详情 / 编辑（列表项点击） -->
+  <div class="modal-overlay" id="monitorDetailModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">监控账号详情</div>
+        <div class="modal-close" onclick="closeMonitorDetailModal()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="detailRelationId">监控关系 ID · id</label>
+          <input type="text" class="form-input" id="detailRelationId" readonly>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="detailTwitterUserId">Twitter 用户 ID · twitterUserId</label>
+          <input type="text" class="form-input" id="detailTwitterUserId" readonly>
+        </div>
+        <div class="form-group">
+          <label class="form-label">显示名 · profile.displayName</label>
+          <div class="detail-readonly" id="detailDisplayName">—</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="detailUsername">用户名 · username</label>
+          <input type="text" class="form-input" id="detailUsername" readonly>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="detailBio">简介 · profile.bio</label>
+          <textarea class="form-input" id="detailBio" rows="3" readonly></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">社交统计 · stats</label>
+          <div class="detail-kv">
+            <span>粉丝 <strong id="detailFollowers">—</strong></span>
+            <span>关注 <strong id="detailFollowing">—</strong></span>
+            <span>认证 <strong id="detailVerified">—</strong></span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="detailStatus">监控状态 · status</label>
+          <select class="form-select" id="detailStatus">
+            <option value="1">监控中 (1)</option>
+            <option value="-1">已暂停 (-1)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="detailNotes">备注 · notes</label>
+          <textarea class="form-input" id="detailNotes" rows="3" placeholder="可编辑，保存后同步到列表"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeMonitorDetailModal()">取消</button>
+        <button type="button" class="btn btn-white" onclick="saveMonitorDetail()">保存</button>
       </div>
     </div>
   </div>
   
   <script>
+    function submitLogin(e) {
+      e.preventDefault();
+      var email = document.getElementById('loginEmail').value.trim();
+      var pass = document.getElementById('loginPassword').value;
+      if (!email || !pass) {
+        return;
+      }
+      document.body.classList.add('is-authenticated');
+      try {
+        if (document.getElementById('loginRemember').checked) {
+          localStorage.setItem('social_tool_auth', '1');
+          sessionStorage.removeItem('social_tool_auth');
+        } else {
+          sessionStorage.setItem('social_tool_auth', '1');
+          localStorage.removeItem('social_tool_auth');
+        }
+      } catch (err) {}
+    }
+    
+    function logout() {
+      document.body.classList.remove('is-authenticated');
+      try {
+        localStorage.removeItem('social_tool_auth');
+        sessionStorage.removeItem('social_tool_auth');
+      } catch (err) {}
+    }
+    
+    document.addEventListener('DOMContentLoaded', function () {
+      try {
+        if (localStorage.getItem('social_tool_auth') === '1' || sessionStorage.getItem('social_tool_auth') === '1') {
+          document.body.classList.add('is-authenticated');
+        }
+      } catch (err) {}
+    });
+    
     function showPage(pageId) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.getElementById('page-' + pageId).classList.add('active');
@@ -2270,8 +2643,62 @@
       document.getElementById('addMonitorModal').classList.remove('active');
     }
     
-    function toggleTag(tag) {
-      tag.classList.toggle('active');
+    var currentMonitorRow = null;
+    
+    function formatMonitorStat(raw) {
+      if (raw == null || raw === '') return '—';
+      var n = parseInt(String(raw).replace(/[^0-9]/g, ''), 10);
+      if (isNaN(n)) return String(raw);
+      if (n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+      if (n >= 10000) return Math.round(n / 1000) + 'k';
+      if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
+      return String(n);
+    }
+    
+    function openMonitorDetailModal(row) {
+      if (!row || !row.classList.contains('monitor-item')) return;
+      currentMonitorRow = row;
+      var d = row.dataset;
+      document.getElementById('detailRelationId').value = d.monitorId || '';
+      document.getElementById('detailTwitterUserId').value = d.twitterUserId || '';
+      document.getElementById('detailDisplayName').textContent = d.displayName || '—';
+      document.getElementById('detailUsername').value = d.username || '';
+      document.getElementById('detailBio').value = d.bio || '';
+      document.getElementById('detailFollowers').textContent = formatMonitorStat(d.followers);
+      document.getElementById('detailFollowing').textContent = formatMonitorStat(d.following);
+      document.getElementById('detailVerified').textContent = d.verified === 'true' ? '是' : '否';
+      document.getElementById('detailNotes').value = d.notes != null ? d.notes : '';
+      var sel = document.getElementById('detailStatus');
+      if (sel) sel.value = d.status === '-1' ? '-1' : '1';
+      document.getElementById('monitorDetailModal').classList.add('active');
+    }
+    
+    function closeMonitorDetailModal() {
+      document.getElementById('monitorDetailModal').classList.remove('active');
+      currentMonitorRow = null;
+    }
+    
+    function saveMonitorDetail() {
+      if (!currentMonitorRow) return;
+      var notes = document.getElementById('detailNotes').value.trim();
+      var status = document.getElementById('detailStatus').value;
+      currentMonitorRow.dataset.notes = notes;
+      currentMonitorRow.dataset.status = status;
+      var textEl = currentMonitorRow.querySelector('.monitor-notes-text');
+      var lineEl = currentMonitorRow.querySelector('.monitor-notes-line');
+      if (textEl) textEl.textContent = notes;
+      if (lineEl) lineEl.classList.toggle('has-notes', !!notes);
+      var st = currentMonitorRow.querySelector('.monitor-status');
+      if (st) {
+        if (status === '1') {
+          st.textContent = '监控中';
+          st.className = 'monitor-status monitor-status--on';
+        } else {
+          st.textContent = '已暂停';
+          st.className = 'monitor-status monitor-status--off';
+        }
+      }
+      closeMonitorDetailModal();
     }
     
     function switchTab(tab, contentId) {
@@ -2340,12 +2767,44 @@
       goFeedPage(feedListPage + 1);
     }
     
+    var MONITOR_PAGE_TOTAL = 2;
+    var monitorListPage = 1;
+    
+    function goMonitorPage(n) {
+      if (n < 1 || n > MONITOR_PAGE_TOTAL) return;
+      monitorListPage = n;
+      var root = document.getElementById('tab-monitors');
+      if (!root) return;
+      root.querySelectorAll('.monitor-page').forEach(function (el) {
+        var p = parseInt(el.getAttribute('data-monitor-page'), 10);
+        el.classList.toggle('is-active', p === monitorListPage);
+      });
+      root.querySelectorAll('[data-monitor-page-btn]').forEach(function (btn) {
+        var p = parseInt(btn.getAttribute('data-monitor-page-btn'), 10);
+        btn.classList.toggle('is-active', p === monitorListPage);
+      });
+      var prev = document.getElementById('monitorPaginationPrev');
+      var next = document.getElementById('monitorPaginationNext');
+      if (prev) prev.disabled = monitorListPage <= 1;
+      if (next) next.disabled = monitorListPage >= MONITOR_PAGE_TOTAL;
+      var label = document.getElementById('monitorPaginationLabel');
+      if (label) label.textContent = '第 ' + monitorListPage + ' / ' + MONITOR_PAGE_TOTAL + ' 页';
+    }
+    
+    function goMonitorPrev() {
+      goMonitorPage(monitorListPage - 1);
+    }
+    
+    function goMonitorNext() {
+      goMonitorPage(monitorListPage + 1);
+    }
+    
     // Close modal when clicking outside
     document.addEventListener('click', function(e) {
-      const modal = document.getElementById('addMonitorModal');
-      if (e.target === modal) {
-        closeModal();
-      }
+      var addModal = document.getElementById('addMonitorModal');
+      if (e.target === addModal) closeModal();
+      var detailModal = document.getElementById('monitorDetailModal');
+      if (e.target === detailModal) closeMonitorDetailModal();
     });
   </script>
 </body>

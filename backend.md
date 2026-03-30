@@ -81,7 +81,7 @@ Worker (Fetcher)              Worker (AI Processor)
     │                                  ├── UPDATE aiSuggestions
     │                                  ├── 过滤检查
     │                                  ├── 发送钉钉
-    │                                  └── UPDATE recentNotifiedTweets
+    │          
     │
     └── 等待下一轮
 ```
@@ -95,7 +95,7 @@ Worker-Fetcher (5分钟定时触发)
     │
     ├── 1. 获取监控列表
     │   └── 查 user_monitored_accounts
-    │       └── 获取所有 status=active 的 twitterUserId
+    │       └── 获取所有 status=1 的 twitterUserId
     │
     ├── 2. 遍历每个监控账号
     │       │
@@ -117,7 +117,7 @@ Worker-Fetcher (5分钟定时触发)
     │               │           ├── 保存推文（待分析状态）
     │               │           │   └── INSERT tweets
     │               │           │       ├── text, metrics, publishedAt...
-    │               │           │       ├── aiStatus: "pending"
+    │               │           │       ├── aiStatus: -1
     │               │           │       └── aiSuggestions: null
     │               │           │
     │               │           └── 发送到 AI 处理队列
@@ -128,7 +128,7 @@ Worker-Fetcher (5分钟定时触发)
 
 **关键点：**
 - 抓取只判断新/旧，不调用 AI
-- 新推文保存后标记 `aiStatus: "pending"`
+- 新推文保存后标记 `aiStatus: -1`
 - 立即发送到 aiQueue，不等待
 - 抓取流程快速完成，不被阻塞
 
@@ -157,7 +157,7 @@ Worker-AI-Processor（可启动多个并发实例）
     ├── 4. 更新推文
     │   └── UPDATE tweets
     │       ├── SET aiSuggestions = {...}
-    │       ├── SET aiStatus = "completed"
+    │       ├── SET aiStatus = 1
     │       └── SET aiAnalyzedAt = now()
     │
     └── 5. 直接发送钉钉
@@ -176,24 +176,10 @@ Worker-AI-Processor（可启动多个并发实例）
 | 场景 | 处理策略 |
 |------|---------|
 | bird-cli 失败 | 重试3次，间隔10s，跳过该账号继续下一个 |
-| Kimi API 失败 | 重试3次，指数退避，标记 aiStatus="failed" |
+| Kimi API 失败 | 重试3次，指数退避，标记 aiStatus=-2 |
 | DingTalk 失败 | 重试5次，间隔5s，记录失败次数 |
 | MongoDB 连接失败 | 指数退避重连，最多10次后退出 |
 | Token 过期 | 检测到 401 错误，停止 Worker，发送告警 |
-
----
-
-## 监控指标
-
-| 指标名 | 说明 |
-|--------|------|
-| `fetcher_accounts_total` | 监控账号总数 |
-| `fetcher_duration` | 抓取耗时 |
-| `ai_queue_length` | AI队列当前长度 |
-| `ai_processor_active` | AI Processor 活跃实例数 |
-| `ai_analysis_duration` | AI分析耗时 |
-| `dingtalk_sent_total` | 钉钉发送数 |
-| `dingtalk_failed_total` | 钉钉发送失败数 |
 
 ---
 
@@ -219,7 +205,6 @@ Worker-AI-Processor（可启动多个并发实例）
 ---
 
 ## 关键改进点
-
 1. **极简架构** - 只有4张表，无 Worker 状态表和频率限制表
 2. **只有一个队列** - 简化架构，只有 aiQueue
 3. **AI + 通知一体化** - AI分析完成后直接发钉钉，不再走额外队列
