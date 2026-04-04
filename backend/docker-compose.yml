@@ -1,5 +1,16 @@
 version: '3.8'
 
+# 连接说明（VS Code / Cursor MongoDB 插件、Compass、终端）：
+# - 本文件凭据：admin / password，authSource 必须为 admin。
+# - 若你从仓库根目录 `social-tool/docker-compose.yml` 启动，凭据为 root / social_tool_dev（见该文件注释）。
+# - Bash/zsh：连接串里若有 &，必须整串加引号，否则 & 会被当成「后台运行」，URI 被截断 → Authentication failed。
+#   mongosh 'mongodb://admin:password@127.0.0.1:27017/social_tool?authSource=admin&directConnection=true'
+# - 服务端为 MongoDB 7：请用 mongosh，不要用已废弃的旧命令 mongo（如 v4.x），否则易出现认证失败。
+# - 不装本机 mongosh 时，可从宿主机进容器：docker exec -it social-tool-mongo mongosh -u admin -p password --authenticationDatabase admin social_tool
+# - 宿主机 mongosh 对 localhost:27017 反复 Authentication failed、但 docker exec 能进：用仓库脚本（始终在容器内连库）：
+#   ../scripts/mongo-shell.sh
+# - 首次初始化后用户名密码写在 Docker volume 里；仅改 compose 环境变量不会更新已有库的账号。
+
 services:
   mongodb:
     image: mongo:7.0

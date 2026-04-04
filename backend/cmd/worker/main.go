@@ -4,108 +4,68 @@ import (
 	"context"
 	"os"
 	"os/signal"
-	"social-tool/internal/config"
+	"social-tool/internal/conf"
 	"social-tool/internal/data"
 	"social-tool/internal/worker"
 	"syscall"
+	"time"
 
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
-	"gopkg.in/natefinch/lumberjack.v2"
+	"github.com/go-kratos/kratos/v2/config"
+	"github.com/go-kratos/kratos/v2/config/file"
+	"github.com/go-kratos/kratos/v2/log"
+	stdlog "log"
 )
 
-func init() {
-	// 设置时区为北京时间
-	os.Setenv("TZ", "Asia/Shanghai")
-}
-
 func main() {
-	cfg := config.Load()
-	logger := initLogger(cfg)
-	defer logger.Sync()
+	logger := log.NewStdLogger(os.Stdout)
 
-	logger.Info("Starting Social Tool Worker")
+	c := config.New(
+		config.WithSource(
+			file.NewSource("../../configs"),
+		),
+	)
+	defer c.Close()
 
-	db, err := data.NewMongoDB(cfg)
+	if err := c.Load(); err != nil {
+		panic(err)
+	}
+
+	var bc conf.Bootstrap
+	if err := c.Scan(&bc); err != nil {
+		panic(err)
+	}
+
+	// 初始化数据层
+	dataLayer, cleanup, err := data.NewData(bc.Data, logger)
 	if err != nil {
-		logger.Fatal("MongoDB connect failed", zap.Error(err))
+		panic(err)
 	}
-	defer db.Close()
+	defer cleanup()
 
-	logger.Info("MongoDB connected")
+	// 初始化仓库
+	userRepo := data.NewUserRepo(dataLayer)
+	tweetRepo := data.NewTweetRepo(dataLayer)
+	monitorRepo := data.NewMonitorRepo(dataLayer)
+	twitterUserRepo := data.NewTwitterUserRepo(dataLayer)
 
-	if err := initDB(context.Background(), db); err != nil {
-		logger.Fatal("Init DB failed", zap.Error(err))
-	}
+	// 创建 worker
+	w := worker.NewWorker(userRepo, tweetRepo, monitorRepo, twitterUserRepo, logger)
 
-	if err := initTestData(context.Background(), db, logger); err != nil {
-		logger.Fatal("Init test data failed", zap.Error(err))
-	}
-
-	logger.Info("Test data initialized")
-
-	w := worker.New(cfg, db, logger)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
+	// 启动 worker
 	go w.Start(ctx)
 
+	stdlog.Println("Worker started")
+
+	// 等待退出信号
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
 	<-sigCh
 
-	logger.Info("Shutdown signal received")
+	stdlog.Println("Shutdown signal received")
 	cancel()
-}
-
-func initLogger(cfg *config.Config) *zap.Logger {
-	logWriter := &lumberjack.Logger{
-		Filename:   cfg.LogPath,
-		MaxSize:    100,
-		MaxBackups: 30,
-		MaxAge:     7,
-		Compress:   true,
-	}
-
-	level := zap.InfoLevel
-	switch cfg.LogLevel {
-	case "debug":
-		level = zap.DebugLevel
-	case "warn":
-		level = zap.WarnLevel
-	case "error":
-		level = zap.ErrorLevel
-	}
-
-	encoderConfig := zapcore.EncoderConfig{
-		TimeKey:        "time",
-		LevelKey:       "level",
-		MessageKey:     "msg",
-		EncodeLevel:    zapcore.LowercaseLevelEncoder,
-		EncodeTime:     zapcore.ISO8601TimeEncoder,
-		EncodeDuration: zapcore.SecondsDurationEncoder,
-	}
-
-	core := zapcore.NewCore(
-		zapcore.NewJSONEncoder(encoderConfig),
-		zapcore.AddSync(logWriter),
-		level,
-	)
-
-	return zap.New(core, zap.AddCaller())
-}
-
-func initDB(ctx context.Context, db *data.MongoDB) error {
-	repos := []interface{ InitIndexes(ctx context.Context) error }{
-		data.NewUserRepo(db.DB()),
-		data.NewTwitterUserRepo(db.DB()),
-		data.NewUserMonitoredAccountRepo(db.DB()),
-		data.NewTweetRepo(db.DB()),
-	}
-	for _, repo := range repos {
-		if err := repo.InitIndexes(ctx); err != nil {
-			return err
-		}
-	}
-	return nil
+	time.Sleep(1 * time.Second)
+	stdlog.Println("Worker stopped")
 }

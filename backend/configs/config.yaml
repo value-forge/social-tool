@@ -1,0 +1,18 @@
+server:
+  http:
+    addr: 0.0.0.0:8080
+    timeout: 15s
+  grpc:
+    addr: 0.0.0.0:9090
+    timeout: 15s
+data:
+  mongodb:
+    uri: mongodb://admin:password@localhost:27017/social_tool?authSource=admin
+    database: social_tool
+  redis:
+    addr: localhost:6379
+    password: social_tool_dev
+    db: 0
+auth:
+  secret: your-secret-key-change-in-production
+  expire: 604800s

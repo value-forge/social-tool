@@ -1,5 +1,9 @@
 version: "3.8"
 
+# MongoDB 连接串（与本文件 MONGO_INITDB_* 一致）：
+#   mongodb://root:social_tool_dev@127.0.0.1:27017/social_tool?authSource=admin&directConnection=true
+# 若你实际是用 backend/docker-compose.yml 启动的，凭据为 admin/password（见该文件注释）。
+
 services:
   mongodb:
     image: mongo:7
